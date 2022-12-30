@@ -3,7 +3,7 @@
 ###
 ### python2.7 GEDIT2.py -mix MixtureFullRefOrig.csv  -ref FullRefOrig.csv
 
-gedit <- function(ref_obj,query_obj){
+run_gedit <- function(ref_obj,query_obj){
   message("Preparing the reference object for GEDIT")
   gedit_prep_reference()
   message("Preparing the query object for GEDIT")
