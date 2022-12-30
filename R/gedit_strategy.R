@@ -16,16 +16,15 @@ run_gedit <- function(ref_obj,query_obj){
 }
 
 gedit_prep_reference <- function(ref_obj){
-  message(ref_obj)
   ### save out the reference GEDIT object
-  Idents(ref_obj) <- "seurat_clusters"
-  write.csv(file="RefObj.csv",AverageExpression(combined.seurat.sct,assays = "RNA",slot = "counts")$RNA)
+  Seurat::Idents(ref_obj) <- "seurat_clusters"
+  write.csv(file="RefObj.csv",Seurat::AverageExpression(combined.seurat.sct,assays = "RNA",slot = "counts")$RNA)
 }
 
 gedit_prep_query <- function(query_obj){
   ### save out the mixture sets for each original sample
-  Idents(query_obj) <- "orig.ident"
-  write.csv(file="MixtureQuery.csv",AverageExpression(combined.seurat.sct,assays = "RNA",slot = "counts")$RNA)
+  Seurat::Idents(query_obj) <- "orig.ident"
+  write.csv(file="MixtureQuery.csv",Seurat::AverageExpression(combined.seurat.sct,assays = "RNA",slot = "counts")$RNA)
 }
 
 execute_gedit <- function(){
