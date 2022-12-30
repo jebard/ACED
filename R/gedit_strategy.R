@@ -2,8 +2,6 @@
 ### GEDIT is a python based tool that solves deconvolution using  ...
 ###
 ### python2.7 GEDIT2.py -mix MixtureFullRefOrig.csv  -ref FullRefOrig.csv
-library(basilisk)
-library(BiocStyle)
 
 gedit <- function(ref_obj,query_obj){
   message("Preparing the reference object for GEDIT")
