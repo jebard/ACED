@@ -11,6 +11,10 @@ gedit <- function(ref_obj,query_obj){
   message("Preparing the query object for GEDIT")
   gedit_prep_query()
   message("Running GEDIT deconvolution...")
+  execute_gedit()
+  message("Gathering GEDIT results")
+  predictions <- gedit_gather_results()
+  return(predictions)
 }
 
 gedit_prep_reference <- function(ref_obj){
@@ -26,21 +30,21 @@ gedit_prep_query <- function(query_obj){
 }
 
 execute_gedit <- function(){
-  ?BasiliskEnvironment()
-  my_env <- BasiliskEnvironment(envname="drrsd_gedit",
-                                pkgname="DRRSD",
-                                packages=c("random", "numpy")
-  )
-  proc <- basiliskStart(my_env)
-  on.exit(basiliskStop(proc))
-  basiliskRun(proc) {
+  #my_env <- BasiliskEnvironment(envname="drrsd_gedit",
+  #                              pkgname="DRRSD",
+  #                              packages=c("random", "numpy")
+  #)
+  #proc <- basiliskStart(my_env)
+  #on.exit(basiliskStop(proc))
+  #basiliskRun(proc) {
     system("python GEDIT2.py -mix MixtureFullRefOrig.csv -ref FullRefOrig.csv", TRUE)
-  }
+  #}
 }
 
-gedit_gather_results(){
+gedit_gather_results <- function(){
   predictions = read.table(file="MixtureQuery.csv_RefObj.csv_50_Entropy_0.0_CTPredictions.tsv",header = TRUE, row.names = 1, sep = "\t")
   truth <- prop.table(table(combined.seurat.sct$orig.ident,combined.seurat.sct$seurat_clusters),margin=1)
   AE <- truth - predictions[rownames(truth),]
+  return(predictions)
 }
 
