@@ -5,9 +5,9 @@
 library(Seurat)
 run_gedit <- function(ref_obj,query_obj){
   message("Preparing the reference object for GEDIT")
-  gedit_prep_reference()
+  gedit_prep_reference(ref_obj)
   message("Preparing the query object for GEDIT")
-  gedit_prep_query()
+  gedit_prep_query(query_obj)
   message("Running GEDIT deconvolution...")
   execute_gedit()
   message("Gathering GEDIT results")
