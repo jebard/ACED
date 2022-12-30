@@ -14,7 +14,7 @@
 #' @export
 #' @examples
 run_deconvolution <- function(ref_obj, query_obj, strategy){
-  if(strategy="bayesprism"){
+  if(strategy=="bayesprism"){
     run_bayesprism()
   } else if (strategy=="music") {
     run_music()
