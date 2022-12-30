@@ -16,7 +16,7 @@ run_gedit <- function(ref_obj,query_obj){
 }
 
 gedit_prep_reference <- function(ref_obj){
-  message(ref_obj)
+  ref_obj
   ### save out the reference GEDIT object
   Idents(ref_obj) <- "seurat_clusters"
   write.csv(file="RefObj.csv",AverageExpression(combined.seurat.sct,assays = "RNA",slot = "counts")$RNA)
