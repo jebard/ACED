@@ -1,4 +1,5 @@
 #!/usr/bin/python
+### JBARD packaging GEDIT3 with DRRSD for sake of ease 
 import sys
 sys.path.insert(0,"scripts/")
 #from scripts 
