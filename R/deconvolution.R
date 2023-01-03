@@ -26,4 +26,10 @@ run_deconvolution <- function(ref_obj, query_obj, strategy){
   }
 }
 
+get_cluster_proportions <- function(ref_obj){
+  proportions <- prop.table(table(ref_obj$orig.ident,ref_obj$seurat_clusters),margin=2)
+  proportions <- data.frame(proportions)
+  return(proportions)
+}
+
 
