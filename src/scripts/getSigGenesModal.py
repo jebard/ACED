@@ -1,6 +1,7 @@
 import sys
 from math import log
-
+### JBARD packaging GEDIT3 with DRRSD for sake of ease 
+ 
 def returnSigMatrix(inMat,minPerCT,TotalSigs,strModes):
   """
   Identify Signature Genes and return matrix 

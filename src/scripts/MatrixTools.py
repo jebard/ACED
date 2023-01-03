@@ -3,6 +3,7 @@ import sys
 import os
 import numpy as np
 from scipy.optimize import nnls
+### JBARD packaging GEDIT3 with DRRSD for sake of ease 
 
 def qNormMatrices(py_mat1, py_targetMat):
   """

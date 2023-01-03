@@ -4,6 +4,7 @@ Parses the input submitted by the user. Checks that each input is valid.
 If all inputs valid, returns them as a list. If an input is invalid,
 returns False, ErrorMessage
 """
+### JBARD packaging GEDIT3 with DRRSD for sake of ease 
 
 def argsToDict(ArgList):
   argDict = {}
