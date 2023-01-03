@@ -1,4 +1,5 @@
 #exportPattern("^[[:alpha:]]+")
 export('run_deconvolution')
 import("Seurat")
-#import("basilisk")
+import("basilisk")
+
