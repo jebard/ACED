@@ -1,16 +1,17 @@
 # Deconvolution Strategy Pattern
-# Ingests a request to run deconvolution, returns a normalized result regardless of strategy
+# Ingests a request to run cellular deconvolution, returns a normalized result regardless of strategy
 # @author jbard
 
 
 #' run_deconvolution
-#' This function takes in a reference single-cell object, bulk or pseudobulk query, and
+#'
+#' @decription This function takes in a reference single-cell object, bulk or pseudobulk query, and
 #' requires a chosen deconvolution strategy. It seeks to call the external tool, and return
 #' a standardized data table of sample-to-cell type predictions, regardless of implementation
 #' @param strategy
 #' @param ref_obj
 #' @param query_obj
-#' @return
+#' @return matrix of sample-to-cell type predicted values.
 #' @export
 #' @examples
 run_deconvolution <- function(ref_obj, query_obj, strategy){

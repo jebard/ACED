@@ -1,8 +1,11 @@
+library(Seurat)
+
 ### gedit Template Strategy Pattern
 ### GEDIT is a python based tool that solves deconvolution using  ...
 ###
 ### python2.7 GEDIT2.py -mix MixtureFullRefOrig.csv  -ref FullRefOrig.csv
-library(Seurat)
+
+
 run_gedit <- function(ref_obj,query_obj){
   message("Preparing the reference object for GEDIT")
   gedit_prep_reference(ref_obj)
@@ -29,13 +32,13 @@ gedit_prep_query <- function(query_obj){
 
 execute_gedit <- function(){
   #my_env <- BasiliskEnvironment(envname="drrsd_gedit",
-  #                              pkgname="DRRSD",
+  #                             pkgname="DRRSD",
   #                              packages=c("random", "numpy")
   #)
   #proc <- basiliskStart(my_env)
   #on.exit(basiliskStop(proc))
   #basiliskRun(proc) {
-    system("python GEDIT2.py -mix MixtureFullRefOrig.csv -ref FullRefOrig.csv", TRUE)
+  system("python $PWD/src/GEDIT/GEDITv3.0/GEDIT2.py -mix MixtureQuery.csv -ref RefObj.csv", TRUE)
   #}
 }
 
