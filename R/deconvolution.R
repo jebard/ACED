@@ -2,7 +2,6 @@
 # Ingests a request to run cellular deconvolution, returns a normalized result regardless of strategy
 # @author jbard
 
-
 #' run_deconvolution
 #'
 #' @decription This function takes in a reference single-cell object, bulk or pseudobulk query, and
@@ -27,8 +26,7 @@ run_deconvolution <- function(ref_obj, query_obj, strategy){
 }
 
 get_cluster_proportions <- function(ref_obj){
-  proportions <- prop.table(table(ref_obj$orig.ident,ref_obj$seurat_clusters),margin=2)
-  proportions <- data.frame(proportions)
+  proportions <- prop.table(table(ref_obj$orig.ident,ref_obj$seurat_clusters),margin=1)
   return(proportions)
 }
 
