@@ -1,7 +1,7 @@
 import sys
-import scripts.getSigGenesModal
-import scripts.MatrixTools
-import scripts.HandleInput as HandleInput
+from scripts import getSigGenesModal
+from scripts import MatrixTools
+from scripts import HandleInput as HandleInput
 import os
 import random
 import numpy as np

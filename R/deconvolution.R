@@ -30,6 +30,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   actual_proportion <- get_cluster_proportions(ref_obj)
   MAE <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions )
   message("Deconvolution results in MAE: ",MAE)
+  return(MAE)
 }
 
 get_cluster_proportions <- function(ref_obj){
