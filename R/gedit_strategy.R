@@ -39,6 +39,7 @@ execute_gedit <- function(){
   #on.exit(basiliskStop(proc))
   #basiliskRun(proc) {
   system("python $PWD/src/GEDIT/GEDITv3.0/GEDIT3.py -mix MixtureQuery.csv -ref RefObj.csv", TRUE)
+
   #}
 }
 
