@@ -1,4 +1,4 @@
-import MatrixTools
+from . import MatrixTools
 """
 Parses the input submitted by the user. Checks that each input is valid.
 If all inputs valid, returns them as a list. If an input is invalid,
