@@ -44,9 +44,8 @@ execute_gedit <- function(){
 }
 
 gedit_gather_results <- function(){
-  predictions = read.table(file="MixtureQuery.csv_RefObj.csv_50_Entropy_0.0_CTPredictions.tsv",header = TRUE, row.names = 1, sep = "\t")
-  #truth <- prop.table(table(combined.seurat.sct$orig.ident,combined.seurat.sct$seurat_clusters),margin=1)
-  #AE <- truth - predictions[rownames(truth),]
+  ### TODO: Need to update this to a path within the DRRSD package where the output of deconv will go.
+  predictions = read.table(file="~/test_CTPredictions.tsv",header = TRUE, row.names = 1, sep = "\t")
   return(predictions)
 }
 
