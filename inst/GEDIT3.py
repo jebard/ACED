@@ -4,8 +4,8 @@ import sys
 import os
 import random
 import numpy as np
-import scripts.getSigGenesModal
-import scripts.MatrixTools
+import scripts.getSigGenesModal as getSigGenesModal
+import scripts.MatrixTools as MatrixTools
 import scripts.HandleInput as HandleInput
 
 def main():

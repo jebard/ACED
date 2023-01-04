@@ -32,16 +32,9 @@ gedit_prep_query <- function(query_obj){
 }
 
 execute_gedit <- function(){
-  #my_env <- BasiliskEnvironment(envname="drrsd_gedit",
-  #                             pkgname="DRRSD",
-  #                              packages=c("random", "numpy")
-  #)
-  #proc <- basiliskStart(my_env)
-  #on.exit(basiliskStop(proc))
-  #basiliskRun(proc) {
-  #system("python $PWD/src/GEDIT/GEDITv3.0/GEDIT3.py -mix MixtureQuery.csv -ref RefObj.csv", TRUE)
-  #}
-  warning("for now we do nothing in execute gedit because python isn't working")
+  message("Running GEDIT using the following settings:")
+  message(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.csv -outFile $PWD/GEDIT_Deconv"))
+  system(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.csv -outFile $PWD/GEDIT_Deconv"),TRUE)
 }
 
 gedit_gather_results <- function(){
