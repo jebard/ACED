@@ -1,17 +1,5 @@
 #!/usr/bin/python
 ### JBARD packaging GEDIT3 with DRRSD for sake of ease 
-import sys
-sys.path.insert(0,"scripts/")
-#from scripts 
-import getSigGenesModal
-#from scripts 
-import MatrixTools
-#from scripts 
-import HandleInput
-import os
-import random
-import numpy as np
-
 def main():
   """
   usage default:
@@ -21,7 +9,7 @@ def main():
   python ThisScript.py -mix SamplesMat.tsv -ref RefMat.tsv -numSigs SigsPerCT -method SigMethod -RS rowscaling
   """
   #where to write results 
-  curDir = "/".join(os.path.realpath(__file__).split("/")[0:-1]) + "/"
+  curDir = os.getcwd()
 
   myArgs = HandleInput.checkInputs(sys.argv[1:])
   if myArgs[0] == False:

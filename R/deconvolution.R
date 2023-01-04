@@ -13,16 +13,23 @@
 #' @return matrix of sample-to-cell type predicted values.
 #' @export
 #' @examples
-run_deconvolution <- function(ref_obj, query_obj, strategy){
+evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
+  ### first, launch the deconvolution analysis and get the results
+  estimated_proportions <- NULL
   if(strategy=="bayesprism"){
-    run_bayesprism()
+    estimated_proportions <- run_bayesprism()
   } else if (strategy=="music") {
-    run_music()
+    estimated_proportions <- run_music()
   } else if (strategy=="gedit"){
-    run_gedit(ref_obj,query_obj)
+    estimated_proportions <- run_gedit(ref_obj,query_obj)
   } else {
     warning("Invalid deconvolution strategy specified")
   }
+
+  ### next we gather the TRUE or Expected proportions of the reference object
+  actual_proportion <- get_cluster_proportions(ref_obj)
+  MAE <- actual_proportion - proportion
+
 }
 
 get_cluster_proportions <- function(ref_obj){
@@ -30,4 +37,6 @@ get_cluster_proportions <- function(ref_obj){
   return(proportions)
 }
 
+calculate_mean_absolute_error <- function(){
 
+}
