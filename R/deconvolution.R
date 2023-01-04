@@ -31,7 +31,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   MAE <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   MAPE <- calculate_mean_absolute_percentage_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   message("Deconvolution results in MAE: ",MAE)
-  message("Deconvolution results in MAE: ",MAPE)
+  message("Deconvolution results in MAPE: ",MAPE)
   return(c(MAE,MAPE))
 }
 
