@@ -7,13 +7,14 @@ library(Seurat)
 
 
 run_gedit <- function(ref_obj,query_obj){
-  message("Preparing the reference object for GEDIT")
+  message("Please cite GEDIT3 Nadel et al. https://doi.org/10.1093/gigascience/giab002")
+  message("Preparing the reference object for GEDIT3")
   gedit_prep_reference(ref_obj)
-  message("Preparing the query object for GEDIT")
+  message("Preparing the query object for GEDIT3")
   gedit_prep_query(query_obj)
-  message("Running GEDIT deconvolution...")
+  message("Running GEDIT3 deconvolution...")
   execute_gedit()
-  message("Gathering GEDIT results")
+  message("Gathering GEDIT3 results")
   predictions <- gedit_gather_results()
   return(predictions)
 }
