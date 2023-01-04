@@ -5,7 +5,6 @@ library(Seurat)
 ###
 ### python2.7 GEDIT2.py -mix MixtureFullRefOrig.csv  -ref FullRefOrig.csv
 
-
 run_gedit <- function(ref_obj,query_obj){
   message("Please cite GEDIT3 Nadel et al. https://doi.org/10.1093/gigascience/giab002")
   message("Preparing the reference object for GEDIT3")
@@ -32,14 +31,14 @@ gedit_prep_query <- function(query_obj){
 }
 
 execute_gedit <- function(){
-  message("Running GEDIT using the following settings:")
+  message("Running GEDIT3 using the following settings:")
   message(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.csv -outFile $PWD/GEDIT_Deconv"))
   system(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.csv -outFile $PWD/GEDIT_Deconv"),TRUE)
 }
 
 gedit_gather_results <- function(){
   ### TODO: Need to update this to a path within the DRRSD package where the output of deconv will go.
-  predictions = read.table(file="~/test_CTPredictions.tsv",header = TRUE, row.names = 1, sep = "\t")
+  predictions = read.table(file="GEDIT_Deconv_CTPredictions.tsv",header = TRUE, row.names = 1, sep = "\t")
   return(predictions)
 }
 
