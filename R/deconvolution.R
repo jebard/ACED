@@ -31,9 +31,8 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   MAE <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   RSE <- calculate_relative_squared_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   SMAPE <- calculate_smape(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
-  message("Deconvolution results in MAE: ",MAE)
-  message("Deconvolution results in RSE: ",RSE)
-  message("Deconvolution results in SMAPE:, SMAPE")
+  RMSE <- calculate_rmse(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
+  message("Deconvolution results in: ",MAE,RSE,SMAPE,RMSE)
   return(c(MAE,RSE,SMAPE))
 }
 
@@ -61,3 +60,10 @@ calculate_smape <- function(actual_prop,estimated_proportion){
   evp <- as.vector(as.matrix(estimated_proportion))
   return(Metrics::smape(avp + .0000000001,evp))
 }
+
+calculate_rmse <- function(actual_prop,estimated_proportion){
+  avp <- as.vector(actual_prop)
+  evp <- as.vector(as.matrix(estimated_proportion))
+  return(Metrics::rmse(avp,evp))
+}
+
