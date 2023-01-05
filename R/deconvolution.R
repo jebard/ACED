@@ -29,10 +29,12 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   ### next we gather the TRUE or Expected proportions of the reference object
   actual_proportion <- get_cluster_proportions(ref_obj)
   MAE <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
-  MAPE <- calculate_relative_squared_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
+  RSE <- calculate_relative_squared_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
+  SMAPE <- calculate_smape(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   message("Deconvolution results in MAE: ",MAE)
-  message("Deconvolution results in MAPE: ",MAPE)
-  return(c(MAE,MAPE))
+  message("Deconvolution results in RSE: ",RSE)
+  message("Deconvolution results in SMAPE:, SMAPE")
+  return(c(MAE,RSE,SMAPE))
 }
 
 get_cluster_proportions <- function(ref_obj){
@@ -51,4 +53,11 @@ calculate_relative_squared_error <- function(actual_prop,estimated_proportion){
   avp <- as.vector(actual_prop)
   evp <- as.vector(as.matrix(estimated_proportion))
   return(Metrics::rse(avp,evp))
+}
+
+
+calculate_smape <- function(actual_prop,estimated_proportion){
+  avp <- as.vector(actual_prop)
+  evp <- as.vector(as.matrix(estimated_proportion))
+  return(Metrics::Smape(avp + .0000000001,evp))
 }
