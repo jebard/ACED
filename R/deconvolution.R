@@ -34,8 +34,15 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   RMSE <- calculate_rmse(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   AVP_Z <- count_actual_zero(actual_proportion)
   EVP_Z <- count_predicted_zero(estimated_proportions)
-  message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z)
-  return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z))
+  AE <- calculate_absolute_error(estimated_proportions)
+  message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z,",",AE)
+  return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z,AE))
+}
+
+calculate_absolute_error <- function(actual_prop,estimated_proportion){
+  avp <- as.vector(actual_prop)
+  evp <- as.vector(as.matrix(estimated_proportion))
+  return(abs(avp - evp))
 }
 
 get_cluster_proportions <- function(ref_obj){
