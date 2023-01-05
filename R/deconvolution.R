@@ -34,7 +34,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   RMSE <- calculate_rmse(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   AVP_Z <- count_actual_zero(actual_proportion)
   EVP_Z <- count_predicted_zero(estimated_proportions)
-  AE <- calculate_absolute_error(estimated_proportions)
+  AE <- calculate_absolute_error(actual_proportion,estimated_proportions)
   message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z,",",AE)
   return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z,AE))
 }
