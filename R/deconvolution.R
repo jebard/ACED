@@ -59,5 +59,5 @@ calculate_relative_squared_error <- function(actual_prop,estimated_proportion){
 calculate_smape <- function(actual_prop,estimated_proportion){
   avp <- as.vector(actual_prop)
   evp <- as.vector(as.matrix(estimated_proportion))
-  return(Metrics::Smape(avp + .0000000001,evp))
+  return(Metrics::smape(avp + .0000000001,evp))
 }
