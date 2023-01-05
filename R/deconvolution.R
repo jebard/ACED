@@ -26,14 +26,16 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
     warning("Invalid deconvolution strategy specified")
   }
 
-  ### next we gather the TRUE or Expected proportions of the reference object
+  ### next we gather the various metrics and report back
   actual_proportion <- get_cluster_proportions(ref_obj)
   MAE <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   RSE <- calculate_relative_squared_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   SMAPE <- calculate_smape(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   RMSE <- calculate_rmse(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
-  message("Deconvolution results in: ",MAE,RSE,SMAPE,RMSE)
-  return(c(MAE,RSE,SMAPE))
+  AVP_Z <- count_actual_zero(actual_proportion)
+  EVP_Z <- count_predicted_zero(estimated_proportions)
+  message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z)
+  return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z))
 }
 
 get_cluster_proportions <- function(ref_obj){
@@ -47,13 +49,11 @@ calculate_mean_absolute_error <- function(actual_prop,estimated_proportion){
   return(mean(abs(avp - evp)))
 }
 
-
 calculate_relative_squared_error <- function(actual_prop,estimated_proportion){
   avp <- as.vector(actual_prop)
   evp <- as.vector(as.matrix(estimated_proportion))
   return(Metrics::rse(avp,evp))
 }
-
 
 calculate_smape <- function(actual_prop,estimated_proportion){
   avp <- as.vector(actual_prop)
@@ -65,5 +65,13 @@ calculate_rmse <- function(actual_prop,estimated_proportion){
   avp <- as.vector(actual_prop)
   evp <- as.vector(as.matrix(estimated_proportion))
   return(Metrics::rmse(avp,evp))
+}
+
+count_actual_zero <- function(actual_prop){
+  return(sum(actual_prop==0))
+}
+
+count_predicted_zero <- function(estimated_proportion){
+  return(sum(estimated_proportion==0))
 }
 
