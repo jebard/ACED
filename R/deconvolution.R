@@ -42,7 +42,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
 calculate_absolute_error <- function(actual_prop,estimated_proportion){
   avp <- as.vector(actual_prop)
   evp <- as.vector(as.matrix(estimated_proportion))
-  return(abs(avp - evp))
+  return(sum(abs(avp - evp)))
 }
 
 get_cluster_proportions <- function(ref_obj){
