@@ -104,9 +104,10 @@ count_predicted_zero <- function(estimated_proportion){
   return(sum(estimated_proportion==0))
 }
 
-calculate_absolute_cell_error <- function(ref_obj,actual_prop,estimated_proportion){
+calculate_absolute_cell_error <- function(ref_obj=ref_obj,actual_prop=actual_prop,estimated_proportion=estimated_proportion){
+  cells_per_sample <- as.vector(table(ref_obj$orig.ident))
   a.mat <- unclass(actual_prop)
-  b.mat <- as.matrix(estimated_proportions)
+  b.mat <- as.matrix(estimated_proportion)
   a <- as.vector(a.mat * cells_per_sample)
   b <- as.vector(b.mat * cells_per_sample)
   message("ACE:", length(a))
