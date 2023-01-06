@@ -52,7 +52,7 @@ calculate_absolute_error <- function(actual_prop,estimated_proportion){
 calculate_cell_absolute_error <- function(actual_prop,estimated_proportion,cluster_cell_counts){
   avp <- as.vector(actual_prop)
   evp <- as.vector(as.matrix(estimated_proportion))
-  return(sum(abs(avp - evp)*cluster_cell_counts))
+  return(mean(abs(avp - evp)*cluster_cell_counts))
 }
 
 get_cluster_proportions <- function(ref_obj){
