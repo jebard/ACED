@@ -38,7 +38,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   AVP_Z <- count_actual_zero(actual_proportion)
   EVP_Z <- count_predicted_zero(estimated_proportions)
   AE <- calculate_absolute_error(actual_proportion,estimated_proportions)
-  AE_CC <- calcaulte_cell_absolute_error(actual_proportion,estimated_proportions,cluster_cell_counts)
+  AE_CC <- calculate_cell_absolute_error(actual_proportion,estimated_proportions,cluster_cell_counts)
   message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z,",",AE,",",AE_CC)
   return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z,AE,AE_CC))
 }
