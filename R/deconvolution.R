@@ -29,7 +29,6 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   ### next we gather the various metrics and report back
   actual_proportion <- get_cluster_proportions(ref_obj)
   cluster_cell_counts <- get_cluster_cell_counts(ref_obj)
-  sum(abs(avp-evp)*res06.cell.counts)
 
   MAE <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   RSE <- calculate_relative_squared_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
@@ -40,8 +39,9 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   AE <- calculate_absolute_error(actual_proportion,estimated_proportions)
   AE_CC <- calculate_cell_absolute_error(actual_proportion,estimated_proportions,cluster_cell_counts)
   LM <- calculate_linear_regression(actual_proportion,estimated_proportions)
-  message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z,",",AE,",",AE_CC,",",LM)
-  return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z,AE,AE_CC,LM))
+  ACE <- calculate_absolute_cell_error(ref_obj,actual_proportion,estimated_proportions)
+  message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z,",",AE,",",AE_CC,",",LM,",",ACE)
+  return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z,AE,AE_CC,LM,ACE))
 }
 
 calculate_linear_regression <- function(actual_prop,estimated_proportion){
@@ -104,3 +104,8 @@ count_predicted_zero <- function(estimated_proportion){
   return(sum(estimated_proportion==0))
 }
 
+calculate_absolute_cell_error <- function(ref_obj,actual_prop,estimated_proportion){
+  a <- as.vector(as.matrix((estimated_proportions * as.vector(table(ref_obj$orig.ident)))))
+  b <- as.vector((actual_prop * as.vector(table(ref_obj$orig.ident))))
+  return(sum(abs(a-b)))
+}
