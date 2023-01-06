@@ -39,8 +39,16 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   EVP_Z <- count_predicted_zero(estimated_proportions)
   AE <- calculate_absolute_error(actual_proportion,estimated_proportions)
   AE_CC <- calculate_cell_absolute_error(actual_proportion,estimated_proportions,cluster_cell_counts)
-  message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z,",",AE,",",AE_CC)
-  return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z,AE,AE_CC))
+  LM <- calculate_linear_regression(actual_proportion,estimated_proportions)
+  message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z,",",AE,",",AE_CC,",",LM)
+  return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z,AE,AE_CC,LM))
+}
+
+calculate_linear_regression <- function(actual_prop,estimated_proportion){
+  avp <- as.vector(actual_prop)
+  evp <- as.vector(as.matrix(estimated_proportion))
+  lin_reg <- lm(avp~evp)
+  return(sum(abs(lin_reg$residuals)))
 }
 
 calculate_absolute_error <- function(actual_prop,estimated_proportion){
@@ -52,7 +60,7 @@ calculate_absolute_error <- function(actual_prop,estimated_proportion){
 calculate_cell_absolute_error <- function(actual_prop,estimated_proportion,cluster_cell_counts){
   avp <- as.vector(actual_prop)
   evp <- as.vector(as.matrix(estimated_proportion))
-  return(mean(abs(avp - evp)*cluster_cell_counts))
+  return(sum(abs(avp - evp)*cluster_cell_counts))
 }
 
 get_cluster_proportions <- function(ref_obj){
