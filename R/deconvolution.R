@@ -28,6 +28,9 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
 
   ### next we gather the various metrics and report back
   actual_proportion <- get_cluster_proportions(ref_obj)
+  cluster_cell_counts <- get_cluster_cell_counts(ref_obj)
+  sum(abs(avp-evp)*res06.cell.counts)
+
   MAE <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   RSE <- calculate_relative_squared_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   SMAPE <- calculate_smape(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
@@ -35,8 +38,9 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   AVP_Z <- count_actual_zero(actual_proportion)
   EVP_Z <- count_predicted_zero(estimated_proportions)
   AE <- calculate_absolute_error(actual_proportion,estimated_proportions)
-  message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z,",",AE)
-  return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z,AE))
+  AE_CC <- calcaulte_cell_absolute_error(actual_proportion,estimated_proportions,cluster_cell_counts)
+  message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z,",",AE,",",AE_CC)
+  return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z,AE,AE_CC))
 }
 
 calculate_absolute_error <- function(actual_prop,estimated_proportion){
@@ -45,9 +49,19 @@ calculate_absolute_error <- function(actual_prop,estimated_proportion){
   return(sum(abs(avp - evp)))
 }
 
+calculate_cell_absolute_error <- function(actual_prop,estimated_proportion,cluster_cell_counts){
+  avp <- as.vector(actual_prop)
+  evp <- as.vector(as.matrix(estimated_proportion))
+  return(sum(abs(avp - evp)*cluster_cell_counts))
+}
+
 get_cluster_proportions <- function(ref_obj){
   proportions <- prop.table(table(ref_obj$orig.ident,ref_obj$seurat_clusters),margin=1)
   return(proportions)
+}
+
+get_cluster_cell_counts <- function(ref_obj){
+  return(as.vector(table(ref_obj$orig.ident,ref_obj$seurat_clusters)))
 }
 
 calculate_mean_absolute_error <- function(actual_prop,estimated_proportion){
