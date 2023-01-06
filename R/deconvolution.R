@@ -105,7 +105,8 @@ count_predicted_zero <- function(estimated_proportion){
 }
 
 calculate_absolute_cell_error <- function(ref_obj,actual_prop,estimated_proportion){
-  a <- as.vector(as.matrix((estimated_proportions * as.vector(table(ref_obj$orig.ident)))))
-  b <- as.vector((actual_prop * as.vector(table(ref_obj$orig.ident))))
+  cells_per_sample <- as.vector(table(combined.seurat.sct$orig.ident))
+  a <- as.vector(as.matrix(actual_prop) * cells_per_sample)
+  b <- as.vector(as.matrix(estimated_proportion) * cells_per_sample)
   return(sum(abs(a-b)))
 }
