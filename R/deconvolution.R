@@ -109,7 +109,7 @@ calculate_absolute_cell_error <- function(ref_obj,actual_prop,estimated_proporti
   b.mat <- as.matrix(estimated_proportions)
   a <- as.vector(a.mat * cells_per_sample)
   b <- as.vector(b.mat * cells_per_sample)
-  message("ACE": length(a))
-  message("ACE": length(b))
+  message("ACE:", length(a))
+  message("ACE:", length(b))
   return(sum(abs(a-b)))
 }
