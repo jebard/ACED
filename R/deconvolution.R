@@ -47,11 +47,12 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
 }
 
 get_random_proportions <- function(ref_obj){
+  actual_proportion <- get_cluster_proportions(ref_obj)
   # first get the number of samples in the object
   samples <- length(unique(ref_obj$orig.ident))
   # next get the number of clusters in the object
   clusts <- length(levels(ref_obj$seurat_clusters))
-  m <- matrix(rnorm(samples * clusts), nrow=samples)
+  m <- matrix(rnorm(samples * clusts,mean(actual_proportion),sd = sd(actual_proportion)), nrow=samples)
   prob <- exp(m)/rowSums(exp(m))
   return(prob)
 }
