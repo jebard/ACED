@@ -39,15 +39,14 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=3,step=.05
     values_ACE_random = c(values_ACE_random,gedit_results[11])
     values_MAE_random = c(values_MAE_random,gedit_results[12])
     clusters = c(clusters,length(levels(combined.seurat.sct$seurat_clusters)))
-
-    df <- data.frame("MAE"= values_mae, "RSE" = values_rse,
-    "SMAPE" = values_smape, "RMSE" = values_rmse,
-    "AZERO" = values_actual_zero, "PZERO"= values_predicted_zero,
-    "Clusters" = clusters,"AE"=values_ae,"AECC"=values_ae_cc,
-    "LMRES"=values_lm_res,"ACE"=values_ACE,"ACE_Random"=values_ACE_random,
-    "MAE_Random"=values_MAE_random)
-    return(df)
   }
+  df <- data.frame("MAE"= values_mae, "RSE" = values_rse,
+                   "SMAPE" = values_smape, "RMSE" = values_rmse,
+                   "AZERO" = values_actual_zero, "PZERO"= values_predicted_zero,
+                   "Clusters" = clusters,"AE"=values_ae,"AECC"=values_ae_cc,
+                   "LMRES"=values_lm_res,"ACE"=values_ACE,"ACE_Random"=values_ACE_random,
+                   "MAE_Random"=values_MAE_random)
+  return(df)
 }
 
 
