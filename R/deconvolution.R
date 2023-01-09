@@ -25,11 +25,12 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   } else {
     warning("Invalid deconvolution strategy specified")
   }
-
   ### next we gather the various metrics and report back
   actual_proportion <- get_cluster_proportions(ref_obj)
   cluster_cell_counts <- get_cluster_cell_counts(ref_obj)
+  random_proportions <- get_random_proportions(ref_obj)
 
+  ## calculate out the important variables to return
   MAE <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   RSE <- calculate_relative_squared_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   SMAPE <- calculate_smape(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
@@ -40,8 +41,19 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   AE_CC <- calculate_cell_absolute_error(actual_proportion,estimated_proportions,cluster_cell_counts)
   LM <- calculate_linear_regression(actual_proportion,estimated_proportions)
   ACE <- calculate_absolute_cell_error(ref_obj,actual_proportion,estimated_proportions)
-  message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z,",",AE,",",AE_CC,",",LM,",",ACE)
-  return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z,AE,AE_CC,LM,ACE))
+  ACE_Random <- calculate_absolute_cell_error(ref_obj,actual_proportion,random_proportions)
+  message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z,",",AE,",",AE_CC,",",LM,",",ACE,ACE_Random)
+  return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z,AE,AE_CC,LM,ACE,ACE_Random))
+}
+
+get_random_proportions <- function(ref_obj){
+  # first get the number of samples in the object
+  samples <- length(unique(ref_obj$orig.ident))
+  # next get the number of clusters in the object
+  clusts <- length(levels(ref_obj$seurat_clusters))
+  m <- matrix(rnorm(samples * clusts), nrow=samples)
+  prob <- exp(m)/rowSums(exp(m))
+  return(prob)
 }
 
 calculate_linear_regression <- function(actual_prop,estimated_proportion){
@@ -104,7 +116,8 @@ count_predicted_zero <- function(estimated_proportion){
   return(sum(estimated_proportion==0))
 }
 
-calculate_absolute_cell_error <- function(ref_obj=ref_obj,actual_prop=actual_prop,estimated_proportion=estimated_proportion){
+calculate_absolute_cell_error <- function(ref_obj=ref_obj,actual_prop=actual_prop,
+                                          estimated_proportion=estimated_proportion){
   cells_per_sample <- as.vector(table(ref_obj$orig.ident))
   a.mat <- unclass(actual_prop)
   b.mat <- as.matrix(estimated_proportion)
@@ -113,4 +126,21 @@ calculate_absolute_cell_error <- function(ref_obj=ref_obj,actual_prop=actual_pro
   message("ACE:", length(a))
   message("ACE:", length(b))
   return(sum(abs(a-b)))
+}
+
+clear_resolutions <- function(){
+  for (res in seq(from=0.01, to=3.00,by=.01)){
+    resolution_string <- paste0("integrated_snn_res.",res)
+    tryCatch(
+      expr ={
+      combined.seurat.sct[[resolution_string]] <- NULL
+      }, error = function(e){
+      })
+  }
+}
+
+calculate_cluster_tree <- function(){
+  combined.seurat.sct <- BuildClusterTree(combined.seurat.sct)
+  data.tree <- Tool(object = combined.seurat.sct, slot = "BuildClusterTree")
+  return(ape::cophenetic.phylo(data.tree))
 }
