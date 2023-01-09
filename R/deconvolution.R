@@ -32,6 +32,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
 
   ## calculate out the important variables to return
   MAE <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
+  MAE_RANDOM <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = random_proportions)
   RSE <- calculate_relative_squared_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   SMAPE <- calculate_smape(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   RMSE <- calculate_rmse(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
@@ -42,8 +43,8 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   LM <- calculate_linear_regression(actual_proportion,estimated_proportions)
   ACE <- calculate_absolute_cell_error(ref_obj,actual_proportion,estimated_proportions)
   ACE_Random <- calculate_absolute_cell_error(ref_obj,actual_proportion,random_proportions)
-  message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z,",",AE,",",AE_CC,",",LM,",",ACE,ACE_Random)
-  return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z,AE,AE_CC,LM,ACE,ACE_Random))
+  message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z,",",AE,",",AE_CC,",",LM,",",ACE,ACE_Random,MAE_RANDOM)
+  return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z,AE,AE_CC,LM,ACE,ACE_Random,MAE_RANDOM))
 }
 
 get_random_proportions <- function(ref_obj){
