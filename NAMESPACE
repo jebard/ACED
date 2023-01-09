@@ -1,5 +1,6 @@
 #exportPattern("^[[:alpha:]]+")
 export('evaluate_deconvolution')
+export('DRRSD')
 import("Seurat")
 import("basilisk")
 import("Metrics")

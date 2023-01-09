@@ -2,6 +2,57 @@
 # Ingests a request to run cellular deconvolution, returns a normalized result regardless of strategy
 # @author jbard
 
+DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=3,step=.05){
+  values_mae = c()
+  values_rse = c()
+  values_smape = c()
+  values_rmse = c()
+  values_actual_zero = c()
+  values_predicted_zero = c()
+  clusters = c()
+  values_ae = c()
+  values_ae_cc = c()
+  values_lm_res = c()
+  values_ACE = c()
+  values_ACE_random = c()
+  values_MAE_random = c()
+  for (res in c(0.01,0.05,0.1,0.15,0.2,0.25,0.3,0.4,0.5,0.6,0.8,1,1.2,1.5,2,2.5,3)){
+    resolution_string <- paste0("integrated_snn_res.",res)
+    if (resolution_string %in% colnames(ref_obj@meta.data)) {
+      message("Resolution already calculated for reference, skipping")
+      ref_obj$seurat_clusters <- ref_obj[[resolution_string]]
+    } else {
+      ref_obj <- FindClusters(ref_obj,resolution = res, verbose = F)
+    }
+    gedit_results <- evaluate_deconvolution(ref_obj,query_obj,"gedit")
+    print(paste0("Res:",res,",",length(levels(ref_obj$seurat_clusters)),",",gedit_results))
+    values_mae = c(values_mae,gedit_results[1])
+    values_rse = c(values_rse,gedit_results[2])
+    values_smape = c(values_smape,gedit_results[3])
+    values_rmse = c(values_rmse,gedit_results[4])
+    values_actual_zero = c(values_actual_zero,gedit_results[5])
+    values_predicted_zero = c(values_predicted_zero,gedit_results[6])
+    values_ae = c(values_ae,gedit_results[7])
+    values_ae_cc = c(values_ae_cc,gedit_results[8])
+    values_lm_res = c(values_lm_res,gedit_results[9])
+    values_ACE = c(values_ACE,gedit_results[10])
+    values_ACE_random = c(values_ACE_random,gedit_results[11])
+    values_MAE_random = c(values_MAE_random,gedit_results[12])
+    clusters = c(clusters,length(levels(combined.seurat.sct$seurat_clusters)))
+
+    df <- data.frame("MAE"= values_mae, "RSE" = values_rse,
+    "SMAPE" = values_smape, "RMSE" = values_rmse,
+    "AZERO" = values_actual_zero, "PZERO"= values_predicted_zero,
+    "Clusters" = clusters,"AE"=values_ae,"AECC"=values_ae_cc,
+    "LMRES"=values_lm_res,"ACE"=values_ACE,"ACE_Random"=values_ACE_random,
+    "MAE_Random"=values_MAE_random)
+    return(df)
+  }
+}
+
+
+
+
 #' run_deconvolution
 #'
 #' @decription This function takes in a reference single-cell object, bulk or pseudobulk query, and
@@ -58,25 +109,6 @@ get_random_proportions <- function(ref_obj){
   return(prob)
 }
 
-calculate_linear_regression <- function(actual_prop,estimated_proportion){
-  avp <- as.vector(actual_prop)
-  evp <- as.vector(as.matrix(estimated_proportion))
-  lin_reg <- lm(avp~evp)
-  return(sum(abs(lin_reg$residuals)))
-}
-
-calculate_absolute_error <- function(actual_prop,estimated_proportion){
-  avp <- as.vector(actual_prop)
-  evp <- as.vector(as.matrix(estimated_proportion))
-  return(sum(abs(avp - evp)))
-}
-
-calculate_cell_absolute_error <- function(actual_prop,estimated_proportion,cluster_cell_counts){
-  avp <- as.vector(actual_prop)
-  evp <- as.vector(as.matrix(estimated_proportion))
-  return(sum(abs(avp - evp)*cluster_cell_counts))
-}
-
 get_cluster_proportions <- function(ref_obj){
   proportions <- prop.table(table(ref_obj$orig.ident,ref_obj$seurat_clusters),margin=1)
   return(proportions)
@@ -86,49 +118,6 @@ get_cluster_cell_counts <- function(ref_obj){
   return(as.vector(table(ref_obj$orig.ident,ref_obj$seurat_clusters)))
 }
 
-calculate_mean_absolute_error <- function(actual_prop,estimated_proportion){
-  avp <- as.vector(actual_prop)
-  evp <- as.vector(as.matrix(estimated_proportion))
-  return(mean(abs(avp - evp)))
-}
-
-calculate_relative_squared_error <- function(actual_prop,estimated_proportion){
-  avp <- as.vector(actual_prop)
-  evp <- as.vector(as.matrix(estimated_proportion))
-  return(Metrics::rse(avp,evp))
-}
-
-calculate_smape <- function(actual_prop,estimated_proportion){
-  avp <- as.vector(actual_prop)
-  evp <- as.vector(as.matrix(estimated_proportion))
-  return(Metrics::smape(avp + .0000000001,evp))
-}
-
-calculate_rmse <- function(actual_prop,estimated_proportion){
-  avp <- as.vector(actual_prop)
-  evp <- as.vector(as.matrix(estimated_proportion))
-  return(Metrics::rmse(avp,evp))
-}
-
-count_actual_zero <- function(actual_prop){
-  return(sum(actual_prop==0))
-}
-
-count_predicted_zero <- function(estimated_proportion){
-  return(sum(estimated_proportion==0))
-}
-
-calculate_absolute_cell_error <- function(ref_obj=ref_obj,actual_prop=actual_prop,
-                                          estimated_proportion=estimated_proportion){
-  cells_per_sample <- as.vector(table(ref_obj$orig.ident))
-  a.mat <- unclass(actual_prop)
-  b.mat <- as.matrix(estimated_proportion)
-  a <- as.vector(a.mat * cells_per_sample)
-  b <- as.vector(b.mat * cells_per_sample)
-  message("ACE:", length(a))
-  message("ACE:", length(b))
-  return(sum(abs(a-b)))
-}
 
 clear_resolutions <- function(){
   for (res in seq(from=0.01, to=3.00,by=.01)){
