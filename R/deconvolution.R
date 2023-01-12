@@ -70,9 +70,9 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   cluster_cell_counts <- get_cluster_cell_counts(ref_obj)
   random_proportions <- get_random_proportions(ref_obj)
 
-  message(paste0(rownames(actual_proportion),"-",rownames(estimated_proportions),"\n"))
+  ## verify the row orders are equivalent
   estimated_proportions <- estimated_proportions[rownames(actual_prop),]
-  message(paste0(rownames(actual_proportion),"-",rownames(estimated_proportions),"\n"))
+
   ## calculate out the important variables to return
   MAE <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   MAE_RANDOM <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = random_proportions)
