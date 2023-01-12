@@ -42,9 +42,6 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=3,step=.05
   return(df)
 }
 
-
-
-
 #' run_deconvolution
 #'
 #' @decription This function takes in a reference single-cell object, bulk or pseudobulk query, and
@@ -72,6 +69,8 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   actual_proportion <- get_cluster_proportions(ref_obj)
   cluster_cell_counts <- get_cluster_cell_counts(ref_obj)
   random_proportions <- get_random_proportions(ref_obj)
+
+  message(paste0(rownames(actual_proportion),"-",rownames(estimated_proportions)))
 
   ## calculate out the important variables to return
   MAE <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
@@ -109,7 +108,6 @@ get_cluster_proportions <- function(ref_obj){
 get_cluster_cell_counts <- function(ref_obj){
   return(as.vector(table(ref_obj$orig.ident,ref_obj$seurat_clusters)))
 }
-
 
 clear_resolutions <- function(){
   for (res in seq(from=0.01, to=3.00,by=.01)){
