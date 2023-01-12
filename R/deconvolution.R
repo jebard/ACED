@@ -31,7 +31,8 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=3,step=.05
     values_MAE_random = c(values_MAE_random,gedit_results[12])
     clusters = c(clusters,length(levels(ref_obj$seurat_clusters)))
     plot(values_ACE_random~clusters,col="red",ylim=c(0,max(values_ACE_random)))
-    points(values_ACE~clusters)
+    points(values_ACE_random-values_ACE~clusters,col="green")
+    points(values_ACE~clusters,col="blue")
   }
   df <- data.frame("MAE"= values_mae, "RSE" = values_rse,
                    "SMAPE" = values_smape, "RMSE" = values_rmse,
