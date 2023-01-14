@@ -68,20 +68,25 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   } else {
     warning("Invalid deconvolution strategy specified")
   }
+  message("Processing predictions")
   ### next we gather the various metrics and report back
   actual_proportion <- get_cluster_proportions(ref_obj)
+  print(actual_proportion)
   cluster_cell_counts <- get_cluster_cell_counts(ref_obj)
+  print(cluster_cell_counts)
   random_proportions <- get_random_proportions(ref_obj)
+  print(random_proprtions)
 
   ## verify the row orders are equivalent
   estimated_proportions <- estimated_proportions[rownames(actual_prop),]
 
   ## calculate out the important variables to return
+  print("Calculate MAE")
   MAE <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
 
   ## we need to bootstrap this 10 times or something.
   MAE_RANDOM <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = random_proportions)
-
+  print("Calculate Other Stats")
 
   RSE <- calculate_relative_squared_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   SMAPE <- calculate_smape(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
