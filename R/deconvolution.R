@@ -75,7 +75,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   cluster_cell_counts <- get_cluster_cell_counts(ref_obj)
   print(cluster_cell_counts)
   random_proportions <- get_random_proportions(ref_obj)
-  print(random_proprtions)
+  print(random_proportions)
 
   ## verify the row orders are equivalent
   estimated_proportions <- estimated_proportions[rownames(actual_prop),]
