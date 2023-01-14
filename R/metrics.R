@@ -1,7 +1,9 @@
 ### Metrics
 calculate_linear_regression <- function(actual_prop,estimated_proportion){
   avp <- as.vector(actual_prop)
+  print(avp)
   evp <- as.vector(as.matrix(estimated_proportion))
+  print(evp)
   lin_reg <- lm(avp~evp)
   return(sum(abs(lin_reg$residuals)))
 }
