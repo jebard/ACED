@@ -69,7 +69,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
     warning("Invalid deconvolution strategy specified")
   }
   message("Processing predictions")
-  print("Estimated Proportions:\n" ,estimated_proportions)
+  print(estimated_proportions)
   ### next we gather the various metrics and report back
   actual_proportion <- get_cluster_proportions(ref_obj)
   cluster_cell_counts <- get_cluster_cell_counts(ref_obj)
