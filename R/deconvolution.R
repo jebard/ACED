@@ -71,11 +71,8 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   message("Processing predictions")
   ### next we gather the various metrics and report back
   actual_proportion <- get_cluster_proportions(ref_obj)
-  print(actual_proportion)
   cluster_cell_counts <- get_cluster_cell_counts(ref_obj)
-  print(cluster_cell_counts)
   random_proportions <- get_random_proportions(ref_obj)
-  print(random_proportions)
 
   ## verify the row orders are equivalent
   estimated_proportions <- estimated_proportions[rownames(actual_prop),]
@@ -83,19 +80,26 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   ## calculate out the important variables to return
   print("Calculate MAE")
   MAE <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
-
+  print(MAE)
   ## we need to bootstrap this 10 times or something.
   MAE_RANDOM <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = random_proportions)
   print("Calculate Other Stats")
-
   RSE <- calculate_relative_squared_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
+  print("Calculate Other Stats 1")
   SMAPE <- calculate_smape(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
+  print("Calculate Other Stats 2")
   RMSE <- calculate_rmse(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
+  print("Calculate Other Stats 3")
   AVP_Z <- count_actual_zero(actual_proportion)
+  print("Calculate Other Stats 4")
   EVP_Z <- count_predicted_zero(estimated_proportions)
+  print("Calculate Other Stats 5")
   AE <- calculate_absolute_error(actual_proportion,estimated_proportions)
+  print("Calculate Other Stats 6")
   AE_CC <- calculate_cell_absolute_error(actual_proportion,estimated_proportions,cluster_cell_counts)
+  print("Calculate Other Stats 7")
   LM <- calculate_linear_regression(actual_proportion,estimated_proportions)
+  print("Calculate Other Stats 8")
   ACE <- calculate_absolute_cell_error(ref_obj,actual_proportion,estimated_proportions)
 
   message("Bootstrapping the random ACE background calculation")
