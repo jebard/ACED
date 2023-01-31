@@ -156,7 +156,7 @@ calculate_cluster_tree <- function(){
 }
 
 PlotDDRSD <- function(df,xaxis="cluster"){
-  if (slot=="cluster"){
+  if (xaxis=="cluster"){
   optimal_cluster = order((df$ACE_Random-df$ACE),decreasing = T)[1]
   optimal_cluster = df$Clusters[optimal_cluster]
   plot(df$ACE_Random~df$Clusters,col="red",
