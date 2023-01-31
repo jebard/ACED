@@ -175,9 +175,8 @@ PlotDDRSD <- function(df,xaxis="cluster"){
     points((df$ACE_Random-df$ACE)~df$Resolution,col="darkgreen")
     points(df$ACE~df$Resolution,col="blue")
     abline(v=optimal_cluster,h=max((df$ACE_Random-df$ACE)),lty=3,col="orange")
-    legend(length(df$Resolution)-6,(max(df$ACE_Random) + (max(df$ACE_Random)) *.45),
-           legend=c("Background ACE", "GEDIT3 ACE","DRRSD Score"),fill = c("red","blue","darkgreen"))
-    legend("topright", inset=c(-0.2,0), legend=c("A","B"), pch=c(1,3), title="Group")
+    legend("top",inset=c(-0.2,0),legend=c("Background ACE", "GEDIT3 ACE","DRRSD Score"),
+           fill = c("red","blue","darkgreen"),xpd=TRUE)
   }
 
 }
