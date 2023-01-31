@@ -155,7 +155,8 @@ calculate_cluster_tree <- function(){
   return(ape::cophenetic.phylo(data.tree))
 }
 
-PlotDDRSD <- function(df){
+PlotDDRSD <- function(df,slot="cluster"){
+  if (slot == "cluster"){
   optimal_cluster = order((df$ACE_Random-df$ACE),decreasing = T)[1]
   optimal_cluster = df$Clusters[optimal_cluster]
   plot(df$ACE_Random~df$Clusters,col="red",
@@ -166,6 +167,17 @@ PlotDDRSD <- function(df){
   legend(length(df$Clusters)-6,(max(df$ACE_Random)+ (max(df$ACE_Random)) *.45),
          legend=c("Background ACE", "GEDIT3 ACE","DRRSD Score"),
          fill = c("red","blue","darkgreen"))
+  } else {
+    optimal_cluster = order((df$ACE_Random-df$ACE),decreasing = T)[1]
+    optimal_cluster = df$Resolution[optimal_cluster]
+    plot(df$ACE_Random~df$Resolution,col="red",
+         ylim=c(0,max(df$ACE_Random) + (max(df$ACE_Random) * .5)))
+    points((df$ACE_Random-df$ACE)~df$Resolution,col="darkgreen")
+    points(df$ACE~df$Resolution,col="blue")
+    abline(v=optimal_cluster,h=max((df$ACE_Random-df$ACE)),lty=3,col="orange")
+    legend(length(df$Resolution)-6,(max(df$ACE_Random)+ (max(df$ACE_Random)) *.45), legend=c("Background ACE", "GEDIT3 ACE","DRRSD Score"),fill = c("red","blue","darkgreen"))
+
+  }
 
 }
 
