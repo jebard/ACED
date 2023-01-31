@@ -2,13 +2,14 @@
 # Ingests a request to run cellular deconvolution, returns a normalized result regardless of strategy
 # @author jbard
 
-DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=3,step=.05){
+DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05){
   values_mae = c();values_rse = c();values_smape = c();values_rmse = c()
   values_actual_zero = c();values_predicted_zero = c();clusters = c()
   values_ae = c();values_ae_cc = c();values_lm_res = c()
   values_ACE = c();values_ACE_random = c();values_MAE_random = c()
 
-  for (res in c(0.008,0.01,0.025,0.03,0.036,0.04,0.077,0.08,0.1,0.15,0.2,0.25,0.3,0.4,0.5)){#},0.6,0.8,1,1.2,1.5,2,2.5,3)){
+  for (res in c(seq(from=start,to=stop,by=step))){
+  #for (res in c(0.008,0.01,0.025,0.03,0.036,0.04,0.077,0.08,0.1,0.15,0.2,0.25,0.3,0.4,0.5)){#},0.6,0.8,1,1.2,1.5,2,2.5,3)){
     resolution_string <- paste0("integrated_snn_res.",res)
     if (resolution_string %in% colnames(ref_obj@meta.data)) {
       message("Resolution already calculated for reference, skipping")
