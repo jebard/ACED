@@ -4,7 +4,7 @@
 
 DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05){
   values_mae = c();values_rse = c();values_smape = c();values_rmse = c()
-  values_actual_zero = c();values_predicted_zero = c();clusters = c()
+  values_actual_zero = c();values_predicted_zero = c();clusters = c();resolution = c();
   values_ae = c();values_ae_cc = c();values_lm_res = c()
   values_ACE = c();values_ACE_random = c();values_MAE_random = c()
 
@@ -33,6 +33,7 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05
     values_ACE_random = c(values_ACE_random,gedit_results[11])
     values_MAE_random = c(values_MAE_random,gedit_results[12])
     clusters = c(clusters,length(levels(ref_obj$seurat_clusters)))
+    resolution = c(resolution,res)
     plot(values_ACE_random~clusters,col="red",ylim=c(0,max(values_ACE_random)))
     points(values_ACE_random-values_ACE~clusters,col="green")
     points(values_ACE~clusters,col="blue")
@@ -42,7 +43,7 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05
                    "AZERO" = values_actual_zero, "PZERO"= values_predicted_zero,
                    "Clusters" = clusters,"AE"=values_ae,"AECC"=values_ae_cc,
                    "LMRES"=values_lm_res,"ACE"=values_ACE,"ACE_Random"=values_ACE_random,
-                   "MAE_Random"=values_MAE_random)
+                   "MAE_Random"=values_MAE_random,"Resolution"=resolution)
   return(df)
 }
 
@@ -153,3 +154,18 @@ calculate_cluster_tree <- function(){
   data.tree <- Tool(object = combined.seurat.sct, slot = "BuildClusterTree")
   return(ape::cophenetic.phylo(data.tree))
 }
+
+PlotDDRSD <- function(df){
+  optimal_cluster = order((df$ACE_Random-df$ACE),decreasing = T)[1]
+  optimal_cluster = df$Clusters[optimal_cluster]
+  plot(df$ACE_Random~df$Clusters,col="red",
+       ylim=c(0,max(df$ACE_Random) + (max(df$ACE_Random) * .5)))
+  points((df$ACE_Random-df$ACE)~df$Clusters,col="darkgreen")
+  points(df$ACE~df$Clusters,col="blue")
+  abline(v=optimal_cluster,h=max((df$ACE_Random-df$ACE)),lty=3,col="orange")
+  legend(length(df$Clusters)-6,(max(df$ACE_Random)+ (max(df$ACE_Random)) *.45),
+         legend=c("Background ACE", "GEDIT3 ACE","DRRSD Score"),
+         fill = c("red","blue","darkgreen"))
+
+}
+
