@@ -2,7 +2,7 @@
 # Ingests a request to run cellular deconvolution, returns a normalized result regardless of strategy
 # @author jbard
 
-DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05,algorithm="louvain"){
+DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05,algorithm="louvain",method="matrix"){
   values_mae = c();values_rse = c();values_smape = c();values_rmse = c()
   values_actual_zero = c();values_predicted_zero = c();clusters = c();resolution = c();
   values_ae = c();values_ae_cc = c();values_lm_res = c()
@@ -16,7 +16,11 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05
     #  ref_obj$seurat_clusters <- ref_obj[[resolution_string]]
     #} else {
       message(paste0("Calulating for reference, running ",algorithm," clustering"))
+      if(algorithm=="leiden" || algorithm == 4){
+        ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=algorithm,verbose=T,method=method)
+      } else {
       ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=algorithm,verbose=T)
+      }
     #}
     gedit_results <- evaluate_deconvolution(ref_obj,query_obj,"gedit")
     print(paste0("Res:",res,",",length(levels(ref_obj$seurat_clusters)),",",gedit_results))
@@ -78,39 +82,24 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   random_proportions <- get_random_proportions(ref_obj)
   ## verify the row orders are equivalent
   estimated_proportions <- estimated_proportions[rownames(actual_proportion),]
-  print(estimated_proportions)
   ## calculate out the important variables to return
-  print("Calculate MAE")
   MAE <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
-  print(MAE)
-  ## we need to bootstrap this 10 times or something.
   MAE_RANDOM <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = random_proportions)
-  print("Calculate Other Stats")
   RSE <- calculate_relative_squared_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
-  print("Calculate Other Stats 1")
   SMAPE <- calculate_smape(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
-  print("Calculate Other Stats 2")
   RMSE <- calculate_rmse(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
-  print("Calculate Other Stats 3")
   AVP_Z <- count_actual_zero(actual_proportion)
-  print("Calculate Other Stats 4")
   EVP_Z <- count_predicted_zero(estimated_proportions)
-  print("Calculate Other Stats 5")
   AE <- calculate_absolute_error(actual_proportion,estimated_proportions)
-  print("Calculate Other Stats 6")
   AE_CC <- calculate_cell_absolute_error(actual_proportion,estimated_proportions,cluster_cell_counts)
-  print("Calculate Other Stats 7")
   LM <- calculate_linear_regression(actual_proportion,estimated_proportions)
-  print("Calculate Other Stats 8")
   ACE <- calculate_absolute_cell_error(ref_obj,actual_proportion,estimated_proportions)
 
   message("Bootstrapping the random ACE background calculation")
   ACE_Boot <- c()
-  for (boot in seq(1,10)){
-  message(ACE_Boot)
+  for (boot in seq(1,1000)){
   ACE_Boot <- rbind(ACE_Boot,calculate_absolute_cell_error(ref_obj,actual_proportion,get_random_proportions(ref_obj)))
   }
-  message(mean(ACE_Boot))
   ACE_Random <- mean(ACE_Boot)
   message("Bootstrapping the random ACE background calculation finished")
 
