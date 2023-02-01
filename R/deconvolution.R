@@ -16,7 +16,7 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05
     #  ref_obj$seurat_clusters <- ref_obj[[resolution_string]]
     #} else {
       message(paste0("Calulating for reference, running ",algorithm," clustering"))
-      ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=method,verbose=T)
+      ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=algorithm,verbose=T)
     #}
     gedit_results <- evaluate_deconvolution(ref_obj,query_obj,"gedit")
     print(paste0("Res:",res,",",length(levels(ref_obj$seurat_clusters)),",",gedit_results))
