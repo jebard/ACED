@@ -38,9 +38,9 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05
     values_MAE_random = c(values_MAE_random,gedit_results[12])
     clusters = c(clusters,length(levels(ref_obj$seurat_clusters)))
     resolution = c(resolution,res)
-    plot(values_ACE_random~clusters,col="red",ylim=c(0,max(values_ACE_random)))
-    points(values_ACE_random-values_ACE~clusters,col="green")
-    points(values_ACE~clusters,col="blue")
+    plot(values_ACE_random~resolution,col="red",ylim=c(0,max(values_ACE_random)))
+    points(values_ACE_random-values_ACE~resolution,col="green")
+    points(values_ACE~resolution,col="blue")
   }
   df <- data.frame("MAE"= values_mae, "RSE" = values_rse,
                    "SMAPE" = values_smape, "RMSE" = values_rmse,
@@ -95,7 +95,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   LM <- calculate_linear_regression(actual_proportion,estimated_proportions)
   ACE <- calculate_absolute_cell_error(ref_obj,actual_proportion,estimated_proportions)
 
-  message("Bootstrapping 1000 times a randombackground calculation")
+  message("Bootstrapping 1000 times a random background calculation")
   ACE_Boot <- c()
   for (boot in seq(1,1000)){
   ACE_Boot <- rbind(ACE_Boot,calculate_absolute_cell_error(ref_obj,actual_proportion,get_random_proportions(ref_obj)))
