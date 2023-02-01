@@ -95,7 +95,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   LM <- calculate_linear_regression(actual_proportion,estimated_proportions)
   ACE <- calculate_absolute_cell_error(ref_obj,actual_proportion,estimated_proportions)
 
-  message("Bootstrapping 1000 times a random ACE background calculation")
+  message("Bootstrapping 1000 times a randombackground calculation")
   ACE_Boot <- c()
   for (boot in seq(1,1000)){
   ACE_Boot <- rbind(ACE_Boot,calculate_absolute_cell_error(ref_obj,actual_proportion,get_random_proportions(ref_obj)))
