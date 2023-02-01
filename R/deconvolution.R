@@ -100,7 +100,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   for (boot in seq(1,1000)){
   ACE_Boot <- rbind(ACE_Boot,calculate_absolute_cell_error(ref_obj,actual_proportion,get_random_proportions(ref_obj)))
   }
-  ACE_Random <- mean(ACE_Boot)
+  ACE_Random <- median(ACE_Boot)
   message("Bootstrapping the random ACE background calculation finished")
 
   message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z,",",AE,",",AE_CC,",",LM,",",ACE,ACE_Random,MAE_RANDOM)
