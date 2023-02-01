@@ -2,7 +2,7 @@
 # Ingests a request to run cellular deconvolution, returns a normalized result regardless of strategy
 # @author jbard
 
-DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05,method="louvain"){
+DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05,algorithm="louvain"){
   values_mae = c();values_rse = c();values_smape = c();values_rmse = c()
   values_actual_zero = c();values_predicted_zero = c();clusters = c();resolution = c();
   values_ae = c();values_ae_cc = c();values_lm_res = c()
@@ -15,8 +15,8 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05
     #  message("Resolution already calculated for reference, skipping")
     #  ref_obj$seurat_clusters <- ref_obj[[resolution_string]]
     #} else {
-      message(paste0("Calulating for reference, running ",method," clustering"))
-      ref_obj <- FindClusters(ref_obj,resolution = res,method=method,verbose=T)
+      message(paste0("Calulating for reference, running ",algorithm," clustering"))
+      ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=method,verbose=T)
     #}
     gedit_results <- evaluate_deconvolution(ref_obj,query_obj,"gedit")
     print(paste0("Res:",res,",",length(levels(ref_obj$seurat_clusters)),",",gedit_results))
