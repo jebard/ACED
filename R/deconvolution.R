@@ -2,7 +2,7 @@
 # Ingests a request to run cellular deconvolution, returns a normalized result regardless of strategy
 # @author jbard
 
-DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05){
+DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05,method="louvain"){
   values_mae = c();values_rse = c();values_smape = c();values_rmse = c()
   values_actual_zero = c();values_predicted_zero = c();clusters = c();resolution = c();
   values_ae = c();values_ae_cc = c();values_lm_res = c()
@@ -11,13 +11,13 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05
   for (res in c(seq(from=start,to=stop,by=step))){
   #for (res in c(0.008,0.01,0.025,0.03,0.036,0.04,0.077,0.08,0.1,0.15,0.2,0.25,0.3,0.4,0.5)){#},0.6,0.8,1,1.2,1.5,2,2.5,3)){
     resolution_string <- paste0("integrated_snn_res.",res)
-    if (resolution_string %in% colnames(ref_obj@meta.data)) {
-      message("Resolution already calculated for reference, skipping")
-      ref_obj$seurat_clusters <- ref_obj[[resolution_string]]
-    } else {
-      message("Resolution not yet calculated for reference, running")
-      ref_obj <- FindClusters(ref_obj,resolution = res, verbose = F)
-    }
+    #if (resolution_string %in% colnames(ref_obj@meta.data)) {
+    #  message("Resolution already calculated for reference, skipping")
+    #  ref_obj$seurat_clusters <- ref_obj[[resolution_string]]
+    #} else {
+      message(paste0("Calulating for reference, running ",method," clustering"))
+      ref_obj <- FindClusters(ref_obj,resolution = res, verbose = F,method=method)
+    #}
     gedit_results <- evaluate_deconvolution(ref_obj,query_obj,"gedit")
     print(paste0("Res:",res,",",length(levels(ref_obj$seurat_clusters)),",",gedit_results))
     values_mae = c(values_mae,gedit_results[1])
