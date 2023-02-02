@@ -97,8 +97,11 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
 
   message("Bootstrapping 1000 times a random background calculation")
   ACE_Boot <- c()
-  for (boot in seq(1,1000)){
-  ACE_Boot <- rbind(ACE_Boot,calculate_absolute_cell_error(ref_obj,actual_proportion,get_random_proportions(ref_obj)))
+  for (boot in seq(1,500)){
+  ACE_Boot <- rbind(ACE_Boot,
+                    calculate_absolute_cell_error(ref_obj,
+                                                  actual_proportion,
+                                                  get_random_proportions(ref_obj)))
   }
   ACE_Random <- median(ACE_Boot)
   message("Bootstrapping the random ACE background calculation finished")
