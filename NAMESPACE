@@ -1,6 +1,7 @@
 #exportPattern("^[[:alpha:]]+")
 export('evaluate_deconvolution')
 export('DRRSD')
+export("get_random_proportions")
 export('PlotDDRSD')
 import("Seurat")
 import("basilisk")
