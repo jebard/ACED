@@ -64,3 +64,15 @@ calculate_absolute_cell_error <- function(ref_obj=ref_obj,
   return(sum(abs(a-b))) ### take the absolute error rate of actual cells per cluster - estimated cells per cluster, and sum it up.
 }
 
+calculate_proportinal_correlation <- function(ref_obj=ref_obj,
+                                          actual_prop=actual_prop,
+                                          estimated_proportion=estimated_proportion){
+  cells_per_sample <- as.vector(table(ref_obj$orig.ident)) ## calculate the number of cells-per-patient
+  a.mat <- unclass(actual_prop) ### convert actual porpotion out of table object type
+  b.mat <- as.matrix(estimated_proportion) ## gather estimated cells per cluster up
+  a <- as.vector(a.mat * cells_per_sample) # multiply the actual proportion table against the total cells to get cells-per-cluster
+  b <- as.vector(b.mat * cells_per_sample) # multiply the estimated proportion table against the total cells to get cells-per-cluster
+  return(cor(a,b)) ### take the absolute error rate of actual cells per cluster - estimated cells per cluster, and sum it up.
+}
+
+
