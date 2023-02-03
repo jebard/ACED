@@ -72,8 +72,8 @@ calculate_proportinal_correlation <- function(ref_obj=ref_obj,
   b.mat <- as.matrix(estimated_proportion) ## gather estimated cells per cluster up
   a <- as.vector(a.mat * cells_per_sample) # multiply the actual proportion table against the total cells to get cells-per-cluster
   b <- as.vector(b.mat * cells_per_sample) # multiply the estimated proportion table against the total cells to get cells-per-cluster
-  message("AMAT: ",a)
-  message("BMAT: ",b)
+  message(paste0("AMAT: ",a))
+  message(paste0("BMAT: ",b))
   return(cor(a,b)) ### take the absolute error rate of actual cells per cluster - estimated cells per cluster, and sum it up.
 }
 
