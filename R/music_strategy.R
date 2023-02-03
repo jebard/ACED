@@ -8,7 +8,7 @@
 #'
 #' @examples
 run_music <- function(ref_object){
-  message("Please cite MUSIC  Wanget al. https://doi.org/10.1038/s41467-018-08023-x")
+  message("Please cite MUSICWang et al. https://doi.org/10.1038/s41467-018-08023-x")
   message("Preparing the reference object for MUSIC")
   SC.eset <- music_prep_reference(music.input = ref_object)
   message("Preparing the query object for MUSIC")
@@ -24,7 +24,8 @@ run_music <- function(ref_object){
 
 music_prep_reference <- function(music.input=NULL){
   scCounts = music.input@assays$integrated@counts
-  individual.labels = music.input@assays$integrated@data@Dimnames[[2]]
+  #individual.labels = music.input@assays$integrated@data@Dimnames[[2]]
+  individual.labels = colnames(MuWT.Pseudotime@assays$integrated@data)
   cell.type.labels = music.input$seurat_clusters
   music.input$names <- music.input$orig.ident
 
