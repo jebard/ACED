@@ -131,7 +131,6 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
                     calculate_absolute_cell_error(ref_obj,
                                                   actual_proportion,
                                                   get_random_proportions(ref_obj)))
-  print(ACE_Boot)
   }
   print(ACE_Boot)
   print(median(ACE_Boot))
