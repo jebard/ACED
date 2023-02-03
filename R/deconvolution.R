@@ -58,6 +58,7 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,strategy="gedit",start=0.0
                    "LMRES"=values_lm_res,"ACE"=values_ACE,"ACE_Random"=values_ACE_random,
                    "MAE_Random"=values_MAE_random,"Resolution"=resolution,
                    "PropCorr"=values_PC)
+  PlotDRRSD(df,xaxis="resolution")
   return(df)
 }
 
