@@ -51,6 +51,9 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,strategy="gedit",start=0.0
     clusters = c(clusters,length(levels(ref_obj$seurat_clusters)))
     resolution = c(resolution,res)
     plot(values_ACE_random~resolution,col="red",ylim=c(0,max(values_ACE_random)))
+    arrows(x0=resolution, y0=values_background_mean-values_background_stdev,
+           x1=resolution, y1=values_background_mean+values_background_stdev,
+           code=3, angle=90, length=0.05,col="red",lty=2)
     points(values_ACE_random-values_ACE~resolution,col="green")
     points(values_ACE~resolution,col="blue")
   }
