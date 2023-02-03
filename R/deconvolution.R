@@ -100,7 +100,8 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   EVP_Z <- count_predicted_zero(estimated_proportions)
   AE <- calculate_absolute_error(actual_proportion,estimated_proportions)
   AE_CC <- calculate_cell_absolute_error(actual_proportion,estimated_proportions,cluster_cell_counts)
-  LM <- calculate_linear_regression(actual_proportion,estimated_proportions)
+  #LM <- calculate_linear_regression(actual_proportion,estimated_proportions)
+  LM <- calculate_cell_linear_regression(ref_obj,actual_proportion,estimated_proportions)
   ACE <- calculate_absolute_cell_error(ref_obj,actual_proportion,estimated_proportions)
   PC <- calculate_proportinal_correlation(ref_obj,actual_proportion,estimated_proportions)
 
