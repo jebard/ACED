@@ -78,7 +78,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   if(strategy=="bayesprism"){
     estimated_proportions <- run_bayesprism()
   } else if (strategy=="music") {
-    estimated_proportions <- run_music()
+    estimated_proportions <- run_music(ref_obj)
   } else if (strategy=="gedit"){
     estimated_proportions <- run_gedit(ref_obj,query_obj)
   } else {
