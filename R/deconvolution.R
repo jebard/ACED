@@ -101,8 +101,11 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   paste0("x",colnames(actual_proportion))
   ### enforce the same column order
   estimated_proportions <- estimated_proportions[rownames(actual_proportion),]
-  estimated_proportions <- estimated_proportions[,colnames(actual_proportion)]
 
+  if(strategy == "music"){
+    ### for some bizarre reason, MUSIC will return clusters out of order
+    estimated_proportions <- estimated_proportions[,colnames(actual_proportion)]
+  }
   print("Estimated:")
   print(estimated_proportions)
 
