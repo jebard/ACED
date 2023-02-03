@@ -8,7 +8,8 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,strategy="gedit",start=0.0
   values_mae = c();values_rse = c();values_smape = c();values_rmse = c()
   values_actual_zero = c();values_predicted_zero = c();clusters = c();resolution = c();
   values_ae = c();values_ae_cc = c();values_lm_res = c()
-  values_ACE = c();values_ACE_random = c();values_MAE_random = c();values_PC = c()
+  values_ACE = c();values_ACE_random = c();values_MAE_random = c();values_PC = c();
+  values_background_stdev = c(); values_background_mean = c();
 
   for (res in c(seq(from=start,to=stop,by=step))){
   #for (res in c(0.008,0.01,0.025,0.03,0.036,0.04,0.077,0.08,0.1,0.15,0.2,0.25,0.3,0.4,0.5)){#},0.6,0.8,1,1.2,1.5,2,2.5,3)){
@@ -45,6 +46,8 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,strategy="gedit",start=0.0
     values_ACE_random = c(values_ACE_random,gedit_results[11])
     values_MAE_random = c(values_MAE_random,gedit_results[12])
     values_PC = c(values_PC,gedit_results[13])
+    values_background_mean = c(values_background_mean,gedit_results[14])
+    values_background_stdev = c(values_background_stdev,gedit_results[15])
     clusters = c(clusters,length(levels(ref_obj$seurat_clusters)))
     resolution = c(resolution,res)
     plot(values_ACE_random~resolution,col="red",ylim=c(0,max(values_ACE_random)))
@@ -57,7 +60,7 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,strategy="gedit",start=0.0
                    "Clusters" = clusters,"AE"=values_ae,"AECC"=values_ae_cc,
                    "LMRES"=values_lm_res,"ACE"=values_ACE,"ACE_Random"=values_ACE_random,
                    "MAE_Random"=values_MAE_random,"Resolution"=resolution,
-                   "PropCorr"=values_PC)
+                   "PropCorr"=values_PC,"BGM"=values_background_mean,"BGSD"=values_background_stdev)
   PlotDRRSD(df,xaxis="resolution")
   return(df)
 }
@@ -133,7 +136,9 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
                                                   get_random_proportions(ref_obj)))
   }
   print(ACE_Boot)
-  print(median(ACE_Boot))
+  background_mean <- mean(ACE_Boot)
+  background_stdev <- sd(ACE_Boot)
+
   ACE_Random <- median(ACE_Boot)
   message("Bootstrapping the random ACE background calculation finished")
 
@@ -143,7 +148,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
 
   return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,
            EVP_Z,AE,AE_CC,LM,ACE,
-           ACE_Random,MAE_RANDOM,PC))
+           ACE_Random,MAE_RANDOM,PC,background_mean,background_stdev))
 }
 
 get_random_proportions <- function(ref_obj){
@@ -198,6 +203,7 @@ PlotDRRSD <- function(df,xaxis="cluster"){
     optimal_cluster = df$Resolution[optimal_cluster]
     plot(df$ACE_Random~df$Resolution,col="red",
          ylim=c(min(c(df$ACE_Random,df$ACE_Random-df$ACE),0),max(df$ACE_Random) + (max(df$ACE_Random) * .5)))
+    arrows(x0=(df$ACE_Random-df$ACE), y0=df$BGM-df$BGSD, x1=(df$ACE_Random-df$ACE), y1=df$BGM+df$BGSD, code=3, angle=90, length=0.1)
     points((df$ACE_Random-df$ACE)~df$Resolution,col="darkgreen")
     points(df$ACE~df$Resolution,col="blue")
     abline(v=optimal_cluster,h=max((df$ACE_Random-df$ACE)),lty=3,col="orange")
