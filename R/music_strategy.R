@@ -10,9 +10,9 @@
 run_music <- function(ref_object){
   message("Please cite MUSIC  Wanget al. https://doi.org/10.1038/s41467-018-08023-x")
   message("Preparing the reference object for MUSIC")
-  SC.eset <- music_prep_reference(ref_object)
+  SC.eset <- music_prep_reference(music.input = ref_object)
   message("Preparing the query object for MUSIC")
-  bulk.eset <- music_prep_query(ref_object)
+  bulk.eset <- music_prep_query(ref_obj = ref_object)
   # Estimate cell type proportions
   print("Running MUSIC ...")
   estimated.prop = music_prop(bulk.eset = bulk.eset,
@@ -22,7 +22,7 @@ run_music <- function(ref_object){
   return(estimated.prop)
 }
 
-music_prep_reference <- function(music.input){
+music_prep_reference <- function(music.input=NULL){
   scCounts = music.input@assays$integrated@counts
   individual.labels = music.input@assays$integrated@data@Dimnames[[2]]
   cell.type.labels = music.input$seurat_clusters
@@ -46,7 +46,7 @@ music_prep_reference <- function(music.input){
   return(SC.eset)
 }
 
-music_prep_query <- function(ref_obj){
+music_prep_query <- function(ref_obj=NULL){
   Idents(ref_obj) <- "orig.ident"
   scrna.exp <- AverageExpression(ref_obj,assays = "integrated",slot = "counts")
   # row names identify features and column names identify samples.
