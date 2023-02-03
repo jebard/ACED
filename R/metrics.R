@@ -72,8 +72,6 @@ calculate_proportinal_correlation <- function(ref_obj=ref_obj,
   b.mat <- as.matrix(estimated_proportion) ## gather estimated cells per cluster up
   a <- as.vector(a.mat * cells_per_sample) # multiply the actual proportion table against the total cells to get cells-per-cluster
   b <- as.vector(b.mat * cells_per_sample) # multiply the estimated proportion table against the total cells to get cells-per-cluster
-  message(paste0("AMAT: ",a))
-  message(paste0("BMAT: ",b))
   return(cor(a,b)) ### take the absolute error rate of actual cells per cluster - estimated cells per cluster, and sum it up.
 }
 
@@ -83,13 +81,9 @@ calculate_cell_linear_regression <- function(ref_obj=ref_obj,
                                               estimated_proportion=estimated_proportion){
   cells_per_sample <- as.vector(table(ref_obj$orig.ident)) ## calculate the number of cells-per-patient
   a.mat <- unclass(actual_prop) ### convert actual porpotion out of table object type
-  message(estimated_proportion)
   b.mat <- as.matrix(estimated_proportion) ## gather estimated cells per cluster up
   a <- as.vector(a.mat * cells_per_sample) # multiply the actual proportion table against the total cells to get cells-per-cluster
   b <- as.vector(b.mat * cells_per_sample) # multiply the estimated proportion table against the total cells to get cells-per-cluster
-  message(a)
-  message(b)
-  message(cells_per_sample)
   lin_reg <- lm(a~b)
   return(sum(abs(lin_reg$residuals)))
 }
