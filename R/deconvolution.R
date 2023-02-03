@@ -2,7 +2,9 @@
 # Ingests a request to run cellular deconvolution, returns a normalized result regardless of strategy
 # @author jbard
 
-DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05,algorithm="louvain",method="matrix"){
+DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,strategy="gedit",start=0.01,stop=1,
+                  step=.05,algorithm="louvain",method="matrix"){
+
   values_mae = c();values_rse = c();values_smape = c();values_rmse = c()
   values_actual_zero = c();values_predicted_zero = c();clusters = c();resolution = c();
   values_ae = c();values_ae_cc = c();values_lm_res = c()
@@ -22,7 +24,7 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05
       ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=algorithm,verbose=T)
       }
     #}
-    gedit_results <- evaluate_deconvolution(ref_obj,query_obj,"gedit")
+    gedit_results <- evaluate_deconvolution(ref_obj,query_obj,strategy)
 
     print(paste0("Res:",res,",",length(levels(ref_obj$seurat_clusters)),",",gedit_results))
 
