@@ -160,7 +160,7 @@ calculate_cluster_tree <- function(){
   return(ape::cophenetic.phylo(data.tree))
 }
 
-PlotDDRSD <- function(df,xaxis="cluster"){
+PlotDRRSD <- function(df,xaxis="cluster"){
   if (xaxis == "cluster"){
   optimal_cluster = order((df$ACE_Random-df$ACE),decreasing = T)[1]
   optimal_cluster = df$Clusters[optimal_cluster]

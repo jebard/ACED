@@ -2,7 +2,7 @@
 export('evaluate_deconvolution')
 export('DRRSD')
 export("get_random_proportions")
-export('PlotDDRSD')
+export('PlotDRRSD')
 import("Seurat")
 import("basilisk")
 import("Metrics")
