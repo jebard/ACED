@@ -98,7 +98,6 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
     rownames(estimated_proportions) <- rownames(actual_proportion)
   }
 
-  paste0("x",colnames(actual_proportion))
   ### enforce the same column order
   estimated_proportions <- estimated_proportions[rownames(actual_proportion),]
 
