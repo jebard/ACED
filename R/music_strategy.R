@@ -19,7 +19,7 @@ run_music <- function(ref_object){
                               sc.eset = SC.eset,
                               clusters = 'cellType',
                               samples = 'SubjectName', verbose = T)
-  return(estimated.prop)
+  return(estimated.prop$Est.prop.weighted)
 }
 
 music_prep_reference <- function(music.input=NULL){
