@@ -8,7 +8,7 @@
 #'
 #' @examples
 run_music <- function(ref_object){
-  message("Please cite MUSICWang et al. https://doi.org/10.1038/s41467-018-08023-x")
+  message("Please cite MUSIC Wang et al. https://doi.org/10.1038/s41467-018-08023-x")
   message("Preparing the reference object for MUSIC")
   SC.eset <- music_prep_reference(music.input = ref_object)
   message("Preparing the query object for MUSIC")
@@ -23,7 +23,7 @@ run_music <- function(ref_object){
 }
 
 music_prep_reference <- function(music.input=NULL){
-  scCounts = music.input@assays$integrated@counts
+  scCounts = music.input@assays$RNA@counts
   individual.labels = music.input@assays$RNA@data@Dimnames[[2]]
   #individual.labels = colnames(MuWT.Pseudotime@assays$integrated@data)
   cell.type.labels = music.input$seurat_clusters
@@ -49,9 +49,9 @@ music_prep_reference <- function(music.input=NULL){
 
 music_prep_query <- function(ref_obj=NULL){
   Idents(ref_obj) <- "orig.ident"
-  scrna.exp <- AverageExpression(ref_obj,assays = "integrated",slot = "counts")
+  scrna.exp <- AverageExpression(ref_obj,assays = "RNA",slot = "counts")
   # row names identify features and column names identify samples.
-  scrna.exp <- scrna.exp$integrated
+  scrna.exp <- scrna.exp$RNA
   pseudobulk.eset = ExpressionSet(assayData = scrna.exp)
   return(pseudobulk.eset)
 }
