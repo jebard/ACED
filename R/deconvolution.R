@@ -48,7 +48,8 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05
                    "AZERO" = values_actual_zero, "PZERO"= values_predicted_zero,
                    "Clusters" = clusters,"AE"=values_ae,"AECC"=values_ae_cc,
                    "LMRES"=values_lm_res,"ACE"=values_ACE,"ACE_Random"=values_ACE_random,
-                   "MAE_Random"=values_MAE_random,"Resolution"=resolution)
+                   "MAE_Random"=values_MAE_random,"Resolution"=resolution,
+                   "PropCorr"=values_PC)
   return(df)
 }
 
