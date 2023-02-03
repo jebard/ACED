@@ -52,7 +52,7 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,strategy="gedit",start=0.0
     resolution = c(resolution,res)
 
     ## generate some on the fly plots
-    plot(values_ACE_random~resolution,col="red",ylim=c(0,values_ACE_random + (values_ACE_random * .5)))
+    plot(values_ACE_random~resolution,col="red",ylim=c(0,max(values_ACE_random + (values_ACE_random * .5))))
     arrows(x0=resolution, y0=values_background_mean-values_background_stdev,
            x1=resolution, y1=values_background_mean+values_background_stdev,
            code=3, angle=90, length=0.05,col="red",lty=2)
@@ -134,7 +134,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   ACE <- calculate_absolute_cell_error(ref_obj,actual_proportion,estimated_proportions)
   PC <- calculate_proportinal_correlation(ref_obj,actual_proportion,estimated_proportions)
 
-   message("Bootstrapping 5 times a random background calculation")
+   message("Bootstrapping a random background 500 times")
   ACE_Boot <- c()
   for (boot in seq(1,500)){
   ACE_Boot <- rbind(ACE_Boot,
