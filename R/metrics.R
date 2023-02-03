@@ -83,6 +83,7 @@ calculate_cell_linear_regression <- function(ref_obj=ref_obj,
                                               estimated_proportion=estimated_proportion){
   cells_per_sample <- as.vector(table(ref_obj$orig.ident)) ## calculate the number of cells-per-patient
   a.mat <- unclass(actual_prop) ### convert actual porpotion out of table object type
+  message(estimated_proportion)
   b.mat <- as.matrix(estimated_proportion) ## gather estimated cells per cluster up
   a <- as.vector(a.mat * cells_per_sample) # multiply the actual proportion table against the total cells to get cells-per-cluster
   b <- as.vector(b.mat * cells_per_sample) # multiply the estimated proportion table against the total cells to get cells-per-cluster
