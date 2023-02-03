@@ -91,7 +91,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   ## verify the row orders are equivalent
   print(estimated_proportions)
   if(rownames(estimated_proportions) == "all"){
-    rownames(estimated_proprtions) <- rownames(actual_proportion)
+    rownames(estimated_proportions) <- rownames(actual_proportion)
   }
 
   estimated_proportions <- estimated_proportions[rownames(actual_proportion),]
