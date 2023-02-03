@@ -172,7 +172,7 @@ PlotDRRSD <- function(df,xaxis="cluster"){
   optimal_cluster = order((df$ACE_Random-df$ACE),decreasing = T)[1]
   optimal_cluster = df$Clusters[optimal_cluster]
   plot(df$ACE_Random~df$Clusters,col="red",
-       ylim=c(min(df$ACE_Random),max(df$ACE_Random) + (max(df$ACE_Random) * .5)))
+       ylim=c(min(c(df$ACE_Random,df$ACE_Random-df$ACE)),max(df$ACE_Random) + (max(df$ACE_Random) * .5)))
   points((df$ACE_Random-df$ACE)~df$Clusters,col="darkgreen")
   points(df$ACE~df$Clusters,col="blue")
   abline(v=optimal_cluster,h=max((df$ACE_Random-df$ACE)),lty=3,col="orange")
@@ -181,7 +181,7 @@ PlotDRRSD <- function(df,xaxis="cluster"){
     optimal_cluster = order((df$ACE_Random-df$ACE),decreasing = T)[1]
     optimal_cluster = df$Resolution[optimal_cluster]
     plot(df$ACE_Random~df$Resolution,col="red",
-         ylim=c(min(df$ACE_Random),max(df$ACE_Random) + (max(df$ACE_Random) * .5)))
+         ylim=c(min(c(df$ACE_Random,df$ACE_Random-df$ACE)),max(df$ACE_Random) + (max(df$ACE_Random) * .5)))
     points((df$ACE_Random-df$ACE)~df$Resolution,col="darkgreen")
     points(df$ACE~df$Resolution,col="blue")
     abline(v=optimal_cluster,h=max((df$ACE_Random-df$ACE)),lty=3,col="orange")
