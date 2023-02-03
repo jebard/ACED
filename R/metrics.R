@@ -86,6 +86,9 @@ calculate_cell_linear_regression <- function(ref_obj=ref_obj,
   b.mat <- as.matrix(estimated_proportion) ## gather estimated cells per cluster up
   a <- as.vector(a.mat * cells_per_sample) # multiply the actual proportion table against the total cells to get cells-per-cluster
   b <- as.vector(b.mat * cells_per_sample) # multiply the estimated proportion table against the total cells to get cells-per-cluster
+  message(a)
+  message(b)
+  message(cells_per_sample)
   lin_reg <- lm(a~b)
   return(sum(abs(lin_reg$residuals)))
 }
