@@ -84,6 +84,9 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   }
   message("Processing predictions")
   print(estimated_proportions)
+  if(rownames(estimated_proportions) == "all"){
+    rownames(estimated_proprtions) <- rownames(actual_proportion)
+  }
   ### next we gather the various metrics and report back
   actual_proportion <- get_cluster_proportions(ref_obj)
   cluster_cell_counts <- get_cluster_cell_counts(ref_obj)
