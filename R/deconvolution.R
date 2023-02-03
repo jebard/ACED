@@ -114,7 +114,10 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   ACE_Random <- median(ACE_Boot)
   message("Bootstrapping the random ACE background calculation finished")
 
-  message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z,",",AE,",",AE_CC,",",LM,",",ACE,ACE_Random,MAE_RANDOM)
+  message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",
+          RMSE,",",AVP_Z,",",EVP_Z,",",AE,",",AE_CC,",",LM,",",
+          ACE,ACE_Random,MAE_RANDOM,", ",PC)
+
   return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,
            EVP_Z,AE,AE_CC,LM,ACE,
            ACE_Random,MAE_RANDOM,ACE_Boot,PC))
