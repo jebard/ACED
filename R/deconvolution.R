@@ -132,7 +132,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
 
    message("Bootstrapping 5 times a random background calculation")
   ACE_Boot <- c()
-  for (boot in seq(1,5)){
+  for (boot in seq(1,100)){
   ACE_Boot <- rbind(ACE_Boot,
                     calculate_absolute_cell_error(ref_obj,
                                                   actual_proportion,
