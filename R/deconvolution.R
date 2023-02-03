@@ -6,7 +6,7 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05
   values_mae = c();values_rse = c();values_smape = c();values_rmse = c()
   values_actual_zero = c();values_predicted_zero = c();clusters = c();resolution = c();
   values_ae = c();values_ae_cc = c();values_lm_res = c()
-  values_ACE = c();values_ACE_random = c();values_MAE_random = c()
+  values_ACE = c();values_ACE_random = c();values_MAE_random = c();values_PC = c()
 
   for (res in c(seq(from=start,to=stop,by=step))){
   #for (res in c(0.008,0.01,0.025,0.03,0.036,0.04,0.077,0.08,0.1,0.15,0.2,0.25,0.3,0.4,0.5)){#},0.6,0.8,1,1.2,1.5,2,2.5,3)){
@@ -36,6 +36,7 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,start=0.01,stop=1,step=.05
     values_ACE = c(values_ACE,gedit_results[10])
     values_ACE_random = c(values_ACE_random,gedit_results[11])
     values_MAE_random = c(values_MAE_random,gedit_results[12])
+    values_PC = c(values_PC,gedit_results[13])
     clusters = c(clusters,length(levels(ref_obj$seurat_clusters)))
     resolution = c(resolution,res)
     plot(values_ACE_random~resolution,col="red",ylim=c(0,max(values_ACE_random)))
@@ -107,7 +108,8 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   message("Bootstrapping the random ACE background calculation finished")
 
   message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",RMSE,",",AVP_Z,",",EVP_Z,",",AE,",",AE_CC,",",LM,",",ACE,ACE_Random,MAE_RANDOM)
-  return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z,AE,AE_CC,LM,ACE,ACE_Random,MAE_RANDOM,ACE_Boot))
+  return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,EVP_Z,AE,AE_CC,LM,
+           ACE,ACE_Random,MAE_RANDOM,ACE_Boot,PC))
 }
 
 get_random_proportions <- function(ref_obj){
