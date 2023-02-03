@@ -24,8 +24,8 @@ run_music <- function(ref_object){
 
 music_prep_reference <- function(music.input=NULL){
   scCounts = music.input@assays$integrated@counts
-  #individual.labels = music.input@assays$integrated@data@Dimnames[[2]]
-  individual.labels = colnames(MuWT.Pseudotime@assays$integrated@data)
+  individual.labels = music.input@assays$RNA@data@Dimnames[[2]]
+  #individual.labels = colnames(MuWT.Pseudotime@assays$integrated@data)
   cell.type.labels = music.input$seurat_clusters
   music.input$names <- music.input$orig.ident
 
