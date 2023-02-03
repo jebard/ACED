@@ -132,7 +132,8 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
                                                   get_random_proportions(ref_obj)))
   print(ACE_Boot)
   }
-
+  print(ACE_Boot)
+  print(median(ACE_Boot))
   ACE_Random <- median(ACE_Boot)
   message("Bootstrapping the random ACE background calculation finished")
 
