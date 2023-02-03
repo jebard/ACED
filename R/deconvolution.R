@@ -93,13 +93,15 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   ## verify the row orders are equivalent
   print("Actual:")
   print(actual_proportion)
-  print("Estimated:")
-  print(estimated_proportions)
+
   if(length(rownames(actual_prop)) == 1){
     rownames(estimated_proportions) <- rownames(actual_proportion)
   }
+
   estimated_proportions <- estimated_proportions[rownames(actual_proportion),]
+  print("Estimated:")
   print(estimated_proportions)
+
   ## calculate out the important variables to return
   MAE <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = estimated_proportions)
   MAE_RANDOM <- calculate_mean_absolute_error(actual_prop = actual_proportion,estimated_proportion = random_proportions)
