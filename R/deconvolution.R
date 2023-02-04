@@ -147,8 +147,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   print(ACE_Boot)
   background_mean <- mean(ACE_Boot)
   background_stdev <- sd(ACE_Boot)
-
-  ACE_Random <- median(ACE_Boot)
+  ACE_Random <- mean(ACE_Boot)
   message("Bootstrapping the random ACE background calculation finished")
 
   message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",
