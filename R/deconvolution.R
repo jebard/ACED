@@ -108,7 +108,8 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   print("Estimated Pre:")
   print(estimated_proportions)
 
-  if(length(rownames(actual_prop)) == 1){
+  if(length(rownames(actual_prop)) == 1 && strategy = "gedit"){
+    print("Adjusting rownames because it is a single-sample in GEDIT")
     rownames(estimated_proportions) <- rownames(actual_proportion)
   }
 
