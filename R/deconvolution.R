@@ -105,6 +105,9 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   print("Actual:")
   print(actual_proportion)
 
+  print("Estimated Pre:")
+  print(estimated_proportions)
+
   if(length(rownames(actual_prop)) == 1){
     rownames(estimated_proportions) <- rownames(actual_proportion)
   }
