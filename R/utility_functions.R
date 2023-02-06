@@ -4,28 +4,28 @@
 
 PlotDRRSD <- function(df,xaxis="cluster"){
   if (xaxis == "cluster"){
-    optimal_cluster = order(ACE_SCORE,decreasing = T)[1]
+    optimal_cluster = order(df$ACE_SCORE,decreasing = T)[1]
     optimal_cluster = df$Clusters[optimal_cluster]
     plot(df$ACE_Random~df$Clusters,col="red",
-         ylim=c(min(c(df$ACE_Random,ACE_SCORE),0),max(df$ACE_Random) + (max(df$ACE_Random) * .5)))
+         ylim=c(min(c(df$ACE_Random,df$ACE_SCORE),0),max(df$ACE_Random) + (max(df$ACE_Random) * .5)))
     arrows(x0=df$Clusters, y0=df$BGM-df$BGSD,
            x1=df$Clusters, y1=df$BGM+df$BGSD,
            code=3, angle=90, length=0.05,col="red",lty=2)
-    points(ACE_SCORE~df$Clusters,col="darkgreen")
+    points(df$ACE_SCORE~df$Clusters,col="darkgreen")
     points(df$ACE~df$Clusters,col="blue")
-    abline(v=optimal_cluster,h=max(ACE_SCORE),lty=3,col="orange")
+    abline(v=optimal_cluster,h=max(df$ACE_SCORE),lty=3,col="orange")
     legend("top",inset=c(-0.2,0),legend=c("Background ACE", "Prediction ACE","DRRSD Score"),fill = c("red","blue","darkgreen"),xpd=TRUE)
   } else {
-    optimal_cluster = order(ACE_SCORE,decreasing = T)[1]
+    optimal_cluster = order(df$ACE_SCORE,decreasing = T)[1]
     optimal_cluster = df$Resolution[optimal_cluster]
     plot(df$ACE_Random~df$Resolution,col="red",
-         ylim=c(min(c(df$ACE_Random,ACE_SCORE),0),max(df$ACE_Random) + (max(df$ACE_Random) * .5)))
+         ylim=c(min(c(df$ACE_Random,df$ACE_SCORE),0),max(df$ACE_Random) + (max(df$ACE_Random) * .5)))
     arrows(x0=df$Resolution, y0=df$BGM-df$BGSD,
            x1=df$Resolution, y1=df$BGM+df$BGSD,
            code=3, angle=90, length=0.05,col="red",lty=2)
-    points(ACE_SCORE~df$Resolution,col="darkgreen")
+    points(df$ACE_SCORE~df$Resolution,col="darkgreen")
     points(df$ACE~df$Resolution,col="blue")
-    abline(v=optimal_cluster,h=max(ACE_SCORE),lty=3,col="orange")
+    abline(v=optimal_cluster,h=max(df$ACE_SCORE),lty=3,col="orange")
     legend("top",inset=c(-0.2,0),legend=c("Background ACE", "Prediction ACE","DRRSD Score"),fill = c("red","blue","darkgreen"),xpd=TRUE)
   }
 

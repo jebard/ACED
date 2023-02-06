@@ -72,7 +72,7 @@ DRRSD <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
                    "SMAPE" = values_smape, "RMSE" = values_rmse,
                    "AZERO" = values_actual_zero, "PZERO"= values_predicted_zero,
                    "Clusters" = clusters,"AE"=values_ae,"AECC"=values_ae_cc,
-                   "LMRES"=values_lm_res,"ACE"=values_ACE,"ACE_Random"=values_ACE_random,"ACE_SCORE"=(values_ACE_random-values_ACE),
+                   "LMRES"=values_lm_res,"ACE"=values_ACE,"ACE_Random"=values_ACE_random,"ACE_SCORE"=values_ACE_random-values_ACE,
                    "MAE_Random"=values_MAE_random,"Resolution"=resolution,
                    "PropCorr"=values_PC,"BGM"=values_background_mean,"BGSD"=values_background_stdev)
   PlotDRRSD(df,xaxis="resolution")
