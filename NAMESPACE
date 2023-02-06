@@ -2,6 +2,7 @@
 export('evaluate_deconvolution')
 export('DRRSD')
 export("get_random_proportions")
+export("calculate_cluster_tree")
 export('PlotDRRSD')
 import("Seurat")
 import("basilisk")
