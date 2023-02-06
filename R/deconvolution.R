@@ -144,7 +144,6 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
                                                   #permute_within_rows(actual_proportion))) ### this line alternatively permutes the matrix
                                                   get_random_proportions(ref_obj)))
   }
-  print(ACE_Boot)
   background_mean <- mean(ACE_Boot)
   background_stdev <- sd(ACE_Boot)
   ACE_Random <- mean(ACE_Boot)
