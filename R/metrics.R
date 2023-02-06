@@ -53,6 +53,17 @@ count_predicted_zero <- function(estimated_proportion){
   return(sum(estimated_proportion==0))
 }
 
+
+#' Calculating the absolute cell error (ACE statistic)
+#' Custom error function that takes the total cells per cluster into account to determine a weighted absolute error
+#' @param ref_obj
+#' @param actual_prop
+#' @param estimated_proportion
+#'
+#' @return
+#' @export
+#'
+#' @examples
 calculate_absolute_cell_error <- function(ref_obj=ref_obj,
                                           actual_prop=actual_prop,
                                           estimated_proportion=estimated_proportion){

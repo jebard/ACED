@@ -40,9 +40,9 @@ permute_within_rows <- function(x) {
 }
 
 get_optimal_resolution <- function(drrsd_object){
-  return(drrsd_object[head(n=1,order(ACE_SCORE,decreasing = T)),]$Resolution)
+  return(drrsd_object[head(n=1,order(drrsd_object$ACE_SCORE,decreasing = T)),]$Resolution)
 }
 
 get_least_optimal_resolution <- function(drrsd_object){
-  return(drrsd_object[head(n=1,order(ACE_SCORE,decreasing = F)),]$Resolution)
+  return(drrsd_object[head(n=1,order(drrsd_object$ACE_SCORE,decreasing = F)),]$Resolution)
 }
