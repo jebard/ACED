@@ -189,9 +189,9 @@ clear_resolutions <- function(){
   }
 }
 
-calculate_cluster_tree <- function(){
-  combined.seurat.sct <- BuildClusterTree(combined.seurat.sct)
-  data.tree <- Tool(object = combined.seurat.sct, slot = "BuildClusterTree")
+calculate_cluster_tree <- function(ref_obj){
+  ref_obj <- BuildClusterTree(ref_obj)
+  data.tree <- Tool(object = ref_obj, slot = "BuildClusterTree")
   return(ape::cophenetic.phylo(data.tree))
 }
 
