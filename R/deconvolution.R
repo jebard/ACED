@@ -72,7 +72,7 @@ DRRSD <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
                    "SMAPE" = values_smape, "RMSE" = values_rmse,
                    "AZERO" = values_actual_zero, "PZERO"= values_predicted_zero,
                    "Clusters" = clusters,"AE"=values_ae,"AECC"=values_ae_cc,
-                   "LMRES"=values_lm_res,"ACE"=values_ACE,"ACE_Random"=values_ACE_random,
+                   "LMRES"=values_lm_res,"ACE"=values_ACE,"ACE_Random"=values_ACE_random,"ACE_SCORE"=(values_ACE_random-values_ACE),
                    "MAE_Random"=values_MAE_random,"Resolution"=resolution,
                    "PropCorr"=values_PC,"BGM"=values_background_mean,"BGSD"=values_background_stdev)
   PlotDRRSD(df,xaxis="resolution")
@@ -200,34 +200,5 @@ calculate_cluster_tree <- function(ref_obj){
   ref_obj <- BuildClusterTree(ref_obj)
   data.tree <- Tool(object = ref_obj, slot = "BuildClusterTree")
   return(ape::cophenetic.phylo(data.tree))
-}
-
-PlotDRRSD <- function(df,xaxis="cluster"){
-  if (xaxis == "cluster"){
-  optimal_cluster = order((df$ACE_Random-df$ACE),decreasing = T)[1]
-  optimal_cluster = df$Clusters[optimal_cluster]
-  plot(df$ACE_Random~df$Clusters,col="red",
-       ylim=c(min(c(df$ACE_Random,df$ACE_Random-df$ACE),0),max(df$ACE_Random) + (max(df$ACE_Random) * .5)))
-  arrows(x0=df$Clusters, y0=df$BGM-df$BGSD,
-         x1=df$Clusters, y1=df$BGM+df$BGSD,
-         code=3, angle=90, length=0.05,col="red",lty=2)
-  points((df$ACE_Random-df$ACE)~df$Clusters,col="darkgreen")
-  points(df$ACE~df$Clusters,col="blue")
-  abline(v=optimal_cluster,h=max((df$ACE_Random-df$ACE)),lty=3,col="orange")
-  legend("top",inset=c(-0.2,0),legend=c("Background ACE", "Prediction ACE","DRRSD Score"),fill = c("red","blue","darkgreen"),xpd=TRUE)
-  } else {
-    optimal_cluster = order((df$ACE_Random-df$ACE),decreasing = T)[1]
-    optimal_cluster = df$Resolution[optimal_cluster]
-    plot(df$ACE_Random~df$Resolution,col="red",
-         ylim=c(min(c(df$ACE_Random,df$ACE_Random-df$ACE),0),max(df$ACE_Random) + (max(df$ACE_Random) * .5)))
-    arrows(x0=df$Resolution, y0=df$BGM-df$BGSD,
-           x1=df$Resolution, y1=df$BGM+df$BGSD,
-           code=3, angle=90, length=0.05,col="red",lty=2)
-    points((df$ACE_Random-df$ACE)~df$Resolution,col="darkgreen")
-    points(df$ACE~df$Resolution,col="blue")
-    abline(v=optimal_cluster,h=max((df$ACE_Random-df$ACE)),lty=3,col="orange")
-    legend("top",inset=c(-0.2,0),legend=c("Background ACE", "Prediction ACE","DRRSD Score"),fill = c("red","blue","darkgreen"),xpd=TRUE)
-  }
-
 }
 
