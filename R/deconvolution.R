@@ -2,9 +2,24 @@
 # Ingests a request to run cellular deconvolution, returns a normalized result regardless of strategy
 # @author jbard
 
-DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,strategy="gedit",start=0.01,stop=1,
+#' DRRSD Define a reference resolution for single-cell deconvolution
+#'
+#' @param ref_obj Seurat reference scRNA object
+#' @param strategy Deconvolution strategy, default="gedit" or "music"
+#' @param start minimum resolution to pass to Seurats FindClusters
+#' @param stop maximum resolution to pass to Seurats FindClusters
+#' @param step increment resolution to step from start to stop resolutions
+#' @param algorithm Clustering strategy, "louvain" or "leiden"
+#' @param method matrix or igraph strategys if using leiden clustering
+#'
+#' @return dataFrame of resulting metrics that DRRSD generates
+#' @export DRRSD
+#'
+#' @examples DRRSD(Seurat.object, start = 0.05,stop=.7,step=0.01,algorithm="louvain",strategy="gedit")
+DRRSD <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
                   step=.05,algorithm="louvain",method="matrix"){
 
+  query_obj <- ref_obj
   values_mae = c();values_rse = c();values_smape = c();values_rmse = c()
   values_actual_zero = c();values_predicted_zero = c();clusters = c();resolution = c();
   values_ae = c();values_ae_cc = c();values_lm_res = c()
@@ -12,14 +27,10 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,strategy="gedit",start=0.0
   values_background_stdev = c(); values_background_mean = c();
 
   for (res in c(seq(from=start,to=stop,by=step))){
-  #for (res in c(0.008,0.01,0.025,0.03,0.036,0.04,0.077,0.08,0.1,0.15,0.2,0.25,0.3,0.4,0.5)){#},0.6,0.8,1,1.2,1.5,2,2.5,3)){
     resolution_string <- paste0("integrated_snn_res.",res)
-    #if (resolution_string %in% colnames(ref_obj@meta.data)) {
-    #  message("Resolution already calculated for reference, skipping")
-    #  ref_obj$seurat_clusters <- ref_obj[[resolution_string]]
-    #} else {
       message(paste0("Calulating for reference, running ",algorithm," clustering"))
-      if(algorithm=="leiden" || algorithm == 4){
+
+        if(algorithm=="leiden" || algorithm == 4){
         ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=algorithm,verbose=T,method=method)
       } else {
       ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=algorithm,verbose=T)
@@ -28,10 +39,6 @@ DRRSD <- function(ref_obj=ref_obj,query_obj=query_obj,strategy="gedit",start=0.0
     gedit_results <- evaluate_deconvolution(ref_obj,query_obj,strategy)
 
     print(paste0("Res:",res,",",length(levels(ref_obj$seurat_clusters)),",",gedit_results))
-
-#    return(c(MAE,RSE,SMAPE,RMSE,AVP_Z,
-#             EVP_Z,AE,AE_CC,LM,ACE,
-#             ACE_Random,MAE_RANDOM,ACE_Boot,PC))
 
     values_mae = c(values_mae,gedit_results[1])
     values_rse = c(values_rse,gedit_results[2])
