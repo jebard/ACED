@@ -3,9 +3,9 @@ Advances in cellular deconvolution algorithms have artfully leveraged single-cel
 
 ## Dependencies
 1. GEDIT or MUSIC deconvolution algorithm and dependencies
-2. Seurat R library and Seurat reference object to test
+2. Seurat R library and an scRNA Seurat reference object
 3. Metrics R library
-4. Retriculate R library
+4. Reticulate R library
 5. Biobase R library
 6. Devtools R library 
 
