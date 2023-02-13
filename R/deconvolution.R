@@ -148,8 +148,8 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   ACE_Boot <- rbind(ACE_Boot,
                     calculate_absolute_cell_error(ref_obj,
                                                   actual_proportion,
-                                                  #permute_within_rows(actual_proportion))) ### this line alternatively permutes the matrix
-                                                  get_random_proportions(ref_obj)))
+                                                  permute_within_rows(actual_proportion))) ### this line alternatively permutes the matrix
+                                                  #get_random_proportions(ref_obj)))
   }
   background_mean <- mean(ACE_Boot)
   background_stdev <- sd(ACE_Boot)
