@@ -19,6 +19,7 @@
 DRRSD <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
                   step=.05,algorithm="louvain",method="matrix"){
 
+  #### object instantiations
   query_obj <- ref_obj
   values_mae = c();values_rse = c();values_smape = c();values_rmse = c()
   values_actual_zero = c();values_predicted_zero = c();clusters = c();resolution = c();
@@ -26,9 +27,10 @@ DRRSD <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
   values_ACE = c();values_ACE_random = c();values_MAE_random = c();values_PC = c();
   values_background_stdev = c(); values_background_mean = c();
 
+  #### for each of the resolutions we are going to be testing
   for (res in c(seq(from=start,to=stop,by=step))){
-    resolution_string <- paste0("integrated_snn_res.",res)
-      message(paste0("Calulating for reference, running ",algorithm," clustering"))
+    #resolution_string <- paste0("integrated_snn_res.",res)
+      message(paste0("Calulating resolution ",res," for reference. Clustering using the ",algorithm," clustering"))
 
         if(algorithm=="leiden" || algorithm == 4){
         ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=algorithm,verbose=T,method=method)
