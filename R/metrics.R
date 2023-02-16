@@ -67,6 +67,8 @@ count_predicted_zero <- function(estimated_proportion){
 calculate_absolute_cell_error <- function(ref_obj=ref_obj,
                                           actual_prop=actual_prop,
                                           estimated_proportion=estimated_proportion){
+  print(table(ref_obj$orig.ident))
+  print(rownames(actual_prop))
   cells_per_sample <- as.vector(table(ref_obj$orig.ident)) ## calculate the number of cells-per-patient
   a.mat <- unclass(actual_prop) ### convert actual porpotion out of table object type
   b.mat <- as.matrix(estimated_proportion) ## gather estimated cells per cluster up
