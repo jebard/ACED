@@ -146,13 +146,27 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
 
    message("Bootstrapping a random background 500 times")
   ACE_Boot <- c()
-  for (boot in seq(1,500)){
-  ACE_Boot <- rbind(ACE_Boot,
-                    calculate_absolute_cell_error(ref_obj,
-                                                  actual_proportion,
-                                                  #permute_within_rows(actual_proportion))) ### this line alternatively permutes the matrix
-                                                  get_random_proportions(ref_obj)))
+
+  #for (boot in seq(1,500)){
+  #ACE_Boot <- rbind(ACE_Boot,
+  #                  calculate_absolute_cell_error(ref_obj,
+  #                                                actual_proportion,
+  #                                                #permute_within_rows(actual_proportion))) ### this line alternatively permutes the matrix
+  #                                                get_random_proportions(ref_obj)))
+  #}
+
+  print("Running Permutation Backgrounds")
+  permuts <- permutations(n = length(as.numeric(get_cluster_proportions(ref_obj))),
+                          r = length(as.numeric(get_cluster_proportions(ref_obj))),
+                          v = as.numeric(get_cluster_proportions(ref_obj)))
+  for (boot in seq(1,nrow(permuts))){
+    ACE_Boot <- rbind(ACE_Boot,
+                      calculate_absolute_cell_error(ref_obj,
+                                                    actual_proportion,
+                                                    permuts[boot,]))
+    }
   }
+
   background_mean <- mean(ACE_Boot)
   background_stdev <- sd(ACE_Boot)
   ACE_Random <- mean(ACE_Boot)
