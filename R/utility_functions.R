@@ -46,3 +46,11 @@ get_optimal_resolution <- function(drrsd_object){
 get_least_optimal_resolution <- function(drrsd_object){
   return(drrsd_object[head(n=1,order(drrsd_object$ACE_SCORE,decreasing = F)),]$Resolution)
 }
+
+
+PlotClusterBreakpoints <- function(drrsd_object){
+  ggplot(drrsd_object,aes(x=Resolution,y=ACE_SCORE,color=as.factor(Clusters))) + geom_point() +
+    geom_point(x=get_optimal_resolution(drrsd_object),
+               y=drrsd_object[drrsd_object$Resolution == get_optimal_resolution(drrsd_object),]$ACE_SCORE,
+               shape=3,color="black")+theme_minimal()
+}
