@@ -159,6 +159,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   permuts <- permutations(n = length(as.numeric(get_cluster_proportions(ref_obj))),
                           r = length(as.numeric(get_cluster_proportions(ref_obj))),
                           v = as.numeric(get_cluster_proportions(ref_obj)))
+  permuts <- permuts[1:100,]
   for (boot in seq(1,nrow(permuts))){
     ACE_Boot <- rbind(ACE_Boot,
                       calculate_absolute_cell_error(ref_obj,
