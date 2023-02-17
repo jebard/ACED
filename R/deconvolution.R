@@ -190,7 +190,8 @@ get_random_proportions <- function(ref_obj){
   samples <- length(unique(ref_obj$orig.ident))
   # next get the number of clusters in the object
   clusts <- length(levels(ref_obj$seurat_clusters))
-  m <- matrix(rnorm(samples * clusts,mean(actual_proportion),sd = sd(actual_proportion)), nrow=samples)
+  m <- matrix(rnorm(samples * clusts,mean(actual_proportion),sd = 1), nrow=samples)
+  #m <- matrix(rnorm(samples * clusts,mean(actual_proportion),sd = sd(actual_proportion)), nrow=samples)
   prob <- exp(m)/rowSums(exp(m))
   return(prob)
 }
