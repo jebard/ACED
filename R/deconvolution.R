@@ -144,7 +144,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   ACE <- calculate_absolute_cell_error(ref_obj,actual_proportion,estimated_proportions)
   PC <- calculate_proportinal_correlation(ref_obj,actual_proportion,estimated_proportions)
 
-   message("Bootstrapping a random background 500 times")
+  message("Bootstrapping a random background 1000 times")
   ACE_Boot <- c()
 
   for (boot in seq(1,1000)){
@@ -174,8 +174,6 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   background_mean <- mean(ACE_Boot)
   background_stdev <- sd(ACE_Boot)
   ACE_Random <- mean(ACE_Boot)
-  ACE_Random <- quantile(ACE_Boot)[2] ## JB REMOVE THIS IF ITS SKETCH
-  message("Bootstrapping the random ACE background calculation finished")
 
   message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",
           RMSE,",",AVP_Z,",",EVP_Z,",",AE,",",AE_CC,",",LM,",",
