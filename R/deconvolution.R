@@ -147,7 +147,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   message("Bootstrapping a random background 1000 times")
   ACE_Boot <- c()
 
-  for (boot in seq(1,1000)){
+  for (boot in seq(1,500)){
   ACE_Boot <- rbind(ACE_Boot,
                     calculate_absolute_cell_error(ref_obj,
                                                   actual_proportion,
