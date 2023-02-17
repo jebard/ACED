@@ -147,29 +147,29 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
    message("Bootstrapping a random background 500 times")
   ACE_Boot <- c()
 
-  #for (boot in seq(1,500)){
-  #ACE_Boot <- rbind(ACE_Boot,
-  #                  calculate_absolute_cell_error(ref_obj,
-  #                                                actual_proportion,
-  #                                                #permute_within_rows(actual_proportion))) ### this line alternatively permutes the matrix
-  #                                                get_random_proportions(ref_obj)))
-  #}
-
-  print("Running up to 1000 permutations to compute backgrounds")
-  permuts <- permutations(n = length(as.numeric(get_cluster_proportions(ref_obj))),
-                          r = length(as.numeric(get_cluster_proportions(ref_obj))),
-                          v = as.numeric(get_cluster_proportions(ref_obj)))
-
-  if (nrow(permuts) > 1000){
-  permuts <- permuts[1:1000,]
+  for (boot in seq(1,1000)){
+  ACE_Boot <- rbind(ACE_Boot,
+                    calculate_absolute_cell_error(ref_obj,
+                                                  actual_proportion,
+                                                  #permute_within_rows(actual_proportion))) ### this line alternatively permutes the matrix
+                                                  get_random_proportions(ref_obj)))
   }
 
-  for (boot in seq(1,nrow(permuts))){
-    ACE_Boot <- rbind(ACE_Boot,
-                      calculate_absolute_cell_error(ref_obj,
-                                                    actual_proportion,
-                                                    permuts[boot,]))
-    }
+  #print("Running up to 1000 permutations to compute backgrounds")
+  #permuts <- permutations(n = length(as.numeric(get_cluster_proportions(ref_obj))),
+  #                        r = length(as.numeric(get_cluster_proportions(ref_obj))),
+  #                        v = as.numeric(get_cluster_proportions(ref_obj)))
+
+  #if (nrow(permuts) > 1000){
+  #permuts <- permuts[1:1000,]
+  #}
+
+  f#or (boot in seq(1,nrow(permuts))){
+  #  ACE_Boot <- rbind(ACE_Boot,
+  #                    calculate_absolute_cell_error(ref_obj,
+  #                                                  actual_proportion,
+  #                                                  permuts[boot,]))
+  #  }
 
   background_mean <- mean(ACE_Boot)
   background_stdev <- sd(ACE_Boot)
