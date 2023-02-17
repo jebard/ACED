@@ -164,7 +164,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   #permuts <- permuts[1:1000,]
   #}
 
-  f#or (boot in seq(1,nrow(permuts))){
+  #for (boot in seq(1,nrow(permuts))){
   #  ACE_Boot <- rbind(ACE_Boot,
   #                    calculate_absolute_cell_error(ref_obj,
   #                                                  actual_proportion,
