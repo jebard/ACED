@@ -174,6 +174,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   background_mean <- mean(ACE_Boot)
   background_stdev <- sd(ACE_Boot)
   ACE_Random <- mean(ACE_Boot)
+  ACE_Random <- quantile(ACE_Boot)[2] ## JB REMOVE THIS IF ITS SKETCH
   message("Bootstrapping the random ACE background calculation finished")
 
   message("Deconvolution results in: ",MAE,",",RSE,",",SMAPE,",",
