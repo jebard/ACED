@@ -17,7 +17,7 @@
 #'
 #' @examples DRRSD(Seurat.object, start = 0.05,stop=.7,step=0.01,algorithm="louvain",strategy="gedit")
 DRRSD <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
-                  step=.05,algorithm="louvain",method="matrix",assay="integrated"){
+                  step=.05,algorithm="louvain",method="matrix"){
 
   #### object instantiations
   query_obj <- ref_obj
@@ -33,9 +33,9 @@ DRRSD <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
       message(paste0("Calulating resolution ",res," for reference. Clustering using the ",algorithm," clustering"))
 
         if(algorithm=="leiden" || algorithm == 4){
-        ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=algorithm,verbose=T,method=method,assay=assay)
+        ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=algorithm,verbose=T,method=method)
       } else {
-      ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=algorithm,verbose=T,assay=assay)
+      ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=algorithm,verbose=T)
       }
     #}
     gedit_results <- evaluate_deconvolution(ref_obj,query_obj,strategy)
