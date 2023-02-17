@@ -160,7 +160,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
                           r = length(as.numeric(get_cluster_proportions(ref_obj))),
                           v = as.numeric(get_cluster_proportions(ref_obj)))
 
-  if (nrow(permuts > 1000)){
+  if (nrow(permuts) > 1000){
   permuts <- permuts[1:1000,]
   }
 
