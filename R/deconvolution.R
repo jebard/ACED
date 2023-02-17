@@ -165,7 +165,6 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
                                                     actual_proportion,
                                                     permuts[boot,]))
     }
-  }
 
   background_mean <- mean(ACE_Boot)
   background_stdev <- sd(ACE_Boot)
