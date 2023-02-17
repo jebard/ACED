@@ -144,7 +144,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   ACE <- calculate_absolute_cell_error(ref_obj,actual_proportion,estimated_proportions)
   PC <- calculate_proportinal_correlation(ref_obj,actual_proportion,estimated_proportions)
 
-  message("Bootstrapping a random background 1000 times")
+  message("Bootstrapping a random background 500 times")
   ACE_Boot <- c()
 
   for (boot in seq(1,500)){
