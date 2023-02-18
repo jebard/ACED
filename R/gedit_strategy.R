@@ -21,7 +21,8 @@ run_gedit <- function(ref_obj,query_obj){
 gedit_prep_reference <- function(ref_obj){
   ### save out the reference GEDIT object
   Seurat::Idents(ref_obj) <- "seurat_clusters"
-  write.csv(file="RefObj.csv",Seurat::AverageExpression(ref_obj,assays = "RNA",slot = "data")$RNA)
+  write.csv(file="RefObj.csv",Seurat::AverageExpression(ref_obj,features = rownames(mu_combined@assays$integrated),
+                                                        assays = "RNA",slot = "counts")$RNA)
 }
 
 gedit_prep_query <- function(query_obj){
