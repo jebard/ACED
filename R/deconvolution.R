@@ -19,7 +19,7 @@
 DRRSD <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
                   step=.05,algorithm="louvain",method="matrix"){
 
-  #### object instantiations
+  #### instantiate lists to return
   query_obj <- ref_obj
   values_mae = c();values_rse = c();values_smape = c();values_rmse = c()
   values_actual_zero = c();values_predicted_zero = c();clusters = c();resolution = c();
@@ -40,8 +40,7 @@ DRRSD <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
     #}
     gedit_results <- evaluate_deconvolution(ref_obj,query_obj,strategy)
 
-    print(paste0("Res:",res,",",length(levels(ref_obj$seurat_clusters)),",",gedit_results))
-
+    ##print(paste0("Res:",res,",",length(levels(ref_obj$seurat_clusters)),",",gedit_results))
     values_mae = c(values_mae,gedit_results[1])
     values_rse = c(values_rse,gedit_results[2])
     values_smape = c(values_smape,gedit_results[3])
