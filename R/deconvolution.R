@@ -123,6 +123,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
 
   if(strategy == "music"){
     ### for some bizarre reason, MUSIC will return clusters out of order
+    print(estimated_proportions)
     estimated_proportions <- estimated_proportions[,colnames(actual_proportion)]
   }
   print("Estimated:")
