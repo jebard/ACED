@@ -127,7 +127,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
     #print(levels(ref_obj$seurat_clusters)[!(levels(ref_obj$seurat_clusters) %in% colnames(estimated_proportions))])
     for (clust in levels(ref_obj$seurat_clusters)[!(levels(ref_obj$seurat_clusters) %in% colnames(estimated_proportions))]) {
       print(paste0("Adding missing cluster: ",clust))
-      estimated_proportions[[as.character(clust)]] <- 0.0
+      estimated_proportions <- cbind(estimated_proportions,as.character(clust)=0.0)
     }
 
     print(estimated_proportions)
