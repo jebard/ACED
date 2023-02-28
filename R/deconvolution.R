@@ -123,7 +123,10 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
 
   if(strategy == "music"){
     ### for some bizarre reason, MUSIC will return clusters out of order
-    print(estimated_proportions)
+    ### If a given cluster isn't in the subset, set estimated proportion to zeros
+    for (clust in levels(ref_obj$seurat_clusters)[!(levels(ref_obj$seurat_clusters) %in% colnames(estimated_proportions))]) {
+      estimated_proportions[, clust] <- 0.0
+    }
     estimated_proportions <- estimated_proportions[,colnames(actual_proportion)]
   }
   print("Estimated:")
