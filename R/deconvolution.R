@@ -130,6 +130,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
       estimated_proportions[[as.character(clust)]] <- 0.0
     }
 
+    print(estimated_proportions)
     estimated_proportions <- estimated_proportions[,colnames(actual_proportion)]
   }
 
