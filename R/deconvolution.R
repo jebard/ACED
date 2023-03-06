@@ -211,15 +211,16 @@ get_cluster_cell_counts <- function(ref_obj){
   return(as.vector(table(ref_obj$orig.ident,ref_obj$seurat_clusters)))
 }
 
-clear_resolutions <- function(){
+clear_resolutions <- function(ref_obj){
   for (res in seq(from=0.01, to=3.00,by=.01)){
     resolution_string <- paste0("integrated_snn_res.",res)
     tryCatch(
       expr ={
-      combined.seurat.sct[[resolution_string]] <- NULL
+      ref_obj[[resolution_string]] <- NULL
       }, error = function(e){
       })
   }
+  return(ref_obj)
 }
 
 calculate_cluster_tree <- function(ref_obj){
