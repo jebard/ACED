@@ -212,7 +212,7 @@ get_cluster_cell_counts <- function(ref_obj){
 }
 
 clear_resolutions <- function(ref_obj){
-  for (res in seq(from=0.001, to=3.00,by=.01)){
+  for (res in seq(from=0.001, to=3.00,by=.001)){
     resolution_string <- paste0("integrated_snn_res.",res)
     tryCatch(
       expr ={
