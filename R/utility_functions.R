@@ -49,8 +49,6 @@ get_least_optimal_resolution <- function(drrsd_object){
 
 
 PlotClusterBreakpoints <- function(drrsd_object){
-  ggplot(drrsd_object,aes(x=Resolution,y=ACE_SCORE,color=as.factor(Clusters))) + geom_point() +
-    geom_point(x=get_optimal_resolution(drrsd_object),
-               y=drrsd_object[drrsd_object$Resolution == get_optimal_resolution(drrsd_object),]$ACE_SCORE,
-               shape=3,color="black")+theme_minimal()
+  ggplot(drrsd_object,aes(x=Resolution,y=Clusters,colour=log(ACE_SCORE,2)))+ geom_point() +
+    viridis::scale_colour_viridis(direction = -1) + theme_minimal() +ylab("Clusters") + labs(colour="Log2 Ace")
 }
