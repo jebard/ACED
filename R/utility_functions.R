@@ -43,6 +43,10 @@ get_optimal_resolution <- function(drrsd_object){
   return(drrsd_object[head(n=1,order(drrsd_object$ACE_SCORE,decreasing = T)),]$Resolution)
 }
 
+get_top_three_resolutions <- function(drrsd_object){
+  return(head(drrsd_object[order(drrsd_object$ACE_SCORE,decreasing = T),]$Resolution,n=3))
+}
+
 get_least_optimal_resolution <- function(drrsd_object){
   return(drrsd_object[head(n=1,order(drrsd_object$ACE_SCORE,decreasing = F)),]$Resolution)
 }
