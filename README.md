@@ -15,21 +15,21 @@ install_github("jebard/ACED",force = T)
 library(ACED)
 
 
-## To Run DRRSD on a Seurat v3 or greater data object
-drrsd.res <- DRRSD(Seurat.Object,start = 0.01,stop=.5,step=0.025)
+## To Run ACED on a Seurat v3 or greater data object
+aced.res <- ACED(Seurat.Object,start = 0.01,stop=.5,step=0.025)
 
 #### Plotting the default resolution view
-PlotDRRSD(drrsd.res,xaxis="resolution")
+PlotACED(drrsd.res,xaxis="resolution")
 
 #### Plotting the optional cluster based view. Multiple resolutions hit the same cluster
-PlotDRRSD(drrsd.res,xaxis="cluster")
+PlotACED(drrsd.res,xaxis="cluster")
 
 #### Calculate and plot the most optimal UMAP clustering resolution
-Seurat.Object <- FindClusters(Seurat.Object,resolution = get_optimal_resolution(drrsd.res))
+Seurat.Object <- FindClusters(Seurat.Object,resolution = get_optimal_resolution(aced.res))
 
 DimPlot(Seurat.Object)
 
 #### Calculate and plot the least optimal UMAP clustering resolution
-Seurat.Object <- FindClusters(Seurat.Object,resolution = get_least_optimal_resolution(drrsd.res))
+Seurat.Object <- FindClusters(Seurat.Object,resolution = get_least_optimal_resolution(aced.res))
 DimPlot(Seurat.Object)
 
