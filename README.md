@@ -1,4 +1,4 @@
-# DRRSD
+# ACED
 Advances in cellular deconvolution algorithms have artfully leveraged single-cell resolution RNA sequencing datasets to predict the cellular composition of bulk tumors. Gene expression estimates at the cell-type level enable dissection of the tumor-microenvironment (TME) from large datasets like that of The Cancer Genome Atlas (TCGA), enabling analysis of the cellular-crosstalk within tumors at scale. However, our interpretation of the TME is contingent upon the accuracy and resolution of the reference single-cell dataset, and thus subsequently the deconvoluted gene expression profiles. In the case of head and neck squamous cell carcinomas (HNSCC), which are a diverse set of tumors with a range of differing etiological origins, the choice of reference scRNA is imperative when attempting to study the nuances within the TME. To address this challenge, we have developed an algorithm to identify the optimal resolution for a single-cell RNA reference set to enhance downstream deconvolutional robustness.
 
 ## Dependencies
@@ -10,9 +10,9 @@ Advances in cellular deconvolution algorithms have artfully leveraged single-cel
 6. Devtools R library 
 
 ## INSTALL
-install_github("jebard/DRRSD",force = T)
+install_github("jebard/ACED",force = T)
 
-library(DRRSD)
+library(ACED)
 
 
 ## To Run DRRSD on a Seurat v3 or greater data object
