@@ -79,16 +79,17 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
     actual <- as.vector(as.matrix(actual))
     predictions <- as.vector(as.matrix(predictions))
 
+    print("Act:")
     print(actual)
+    print("Pred:")
     print(predictions)
 
-    print("calculating abs mean")
+    print("Calculating ACE")
 
     tab <- table(refObj$orig.ident)
-    tab <- tab[names(tab) %in% rownames(predictions)]
-    tab <- unclass(tab)
-    print(tab)
-    cells_per_sample <- as.vector(tab) ## calculate the number of cells-per-patient
+    tab <- as.matrix(tab)
+    tab <- tab[rownames(predictions),]
+    cells_per_sample <- as.vector(tab)
     print(cells_per_sample)
 
     a.mat <- actual ### convert actual porpotion out of table object type
