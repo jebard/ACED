@@ -91,7 +91,10 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
     print(predictions)
     print("Calculating ACE")
 
-
+    a.mat <- actual ### convert actual porpotion out of table object type
+    b.mat <- predictions ## gather estimated cells per cluster up
+    a <- as.vector(a.mat * cells_per_sample) # multiply the actual proportion table against the total cells to get cells-per-cluster
+    b <- as.vector(b.mat * cells_per_sample) # multiply the estimated proportion table against the total cells to get cells-per-cluster
 
     print("Bootstrapping the background")
     ACE_Boot <- c()
@@ -102,18 +105,12 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
     m <- matrix(rnorm(samples * clusts,mean(actual),sd = 1), nrow=samples)
     #m <- matrix(rnorm(samples * clusts,mean(actual_proportion),sd = sd(actual_proportion)), nrow=samples)
     prob <- exp(m)/rowSums(exp(m))
+    back <- as.vector(prob * cells_per_sample) ## background error rate
     ACE_Boot <- rbind(ACE_Boot,prob)
     }
 
-
-    a.mat <- actual ### convert actual porpotion out of table object type
-    b.mat <- predictions ## gather estimated cells per cluster up
-    a <- as.vector(a.mat * cells_per_sample) # multiply the actual proportion table against the total cells to get cells-per-cluster
-    b <- as.vector(b.mat * cells_per_sample) # multiply the estimated proportion table against the total cells to get cells-per-cluster
-    back <- as.vector(prob * cells_per_sample) ## background error rate
-
     values_ACE = c(values_ACE,sum(abs(a-b)))
-    values_BACE = c(values_BACE,sum(abs(a-mean(ACE_Boot))))
+    values_BACE = c(values_BACE,mean(ACE_Boot))
     values_res = c(values_res,res)
 
   }
