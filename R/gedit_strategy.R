@@ -30,7 +30,7 @@ gedit_prep_query <- function(query_obj){
   write.csv(file="MixtureQuery.csv",Seurat::AverageExpression(query_obj,assays = "RNA",slot = "counts")$RNA)
 }
 
-execute_gedit <- function(){
+execute_gedit <- function(res){
   message("Running GEDIT3 using the following settings:")
   message(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.",res,"csv -outFile $PWD/GEDIT_Deconv"))
   system(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.",res,"csv -outFile $PWD/GEDIT_Deconv"),TRUE)
