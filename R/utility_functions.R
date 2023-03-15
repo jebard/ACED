@@ -76,8 +76,8 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,cps=NULL,start=0.1,stop=1,step=0.2
     print("Act:")
     print(actual)
 
-    actual <- as.vector(unclass(actual))
-    predictions <- as.vector(unclass(predictions))
+    actual <- as.vector(actual)
+    predictions <- as.vector(predictions)
 
     print(actual)
     print(predictions)
