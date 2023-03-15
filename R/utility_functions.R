@@ -111,5 +111,5 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
     values_res = c(values_res,res)
 
   }
-  return(data.frame("ACE"=values_ACE,"RES"=values_res))
+  return(data.frame("ACE"=values_ACE,"RES"=values_res,"BACK"=values_BACE))
 }
