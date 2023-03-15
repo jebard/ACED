@@ -70,15 +70,14 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,cps=NULL,start=0.1,stop=1,step=0.2
 
 
     actual <- actual[rownames(actual) %in% rownames(predictions),]
-    predictions <- predictions[rownames(predictions) %in% rownames(actual),]
-
+    predictions <- predictions[rownames(actual),]
     print("Pred:")
     print(predictions)
     print("Act:")
     print(actual)
 
-    actual <- unclass(actual)
-    predictions <- unclass(predictions)
+    actual <- as.vector(unclass(actual))
+    predictions <- as.vector(unclass(predictions))
 
     print(actual)
     print(predictions)
