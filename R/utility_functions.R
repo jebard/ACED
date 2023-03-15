@@ -76,6 +76,12 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
     print("Act:")
     print(actual)
 
+    tab <- table(refObj$orig.ident)
+    tab <- as.matrix(tab)
+    tab <- tab[rownames(predictions),]
+    cells_per_sample <- as.vector(tab)
+    print(cells_per_sample)
+
     actual <- as.vector(as.matrix(actual))
     predictions <- as.vector(as.matrix(predictions))
 
@@ -86,12 +92,6 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
 
     print("Calculating ACE")
 
-    tab <- table(refObj$orig.ident)
-    tab <- as.matrix(tab)
-    tab <- tab[rownames(predictions),]
-    cells_per_sample <- as.vector(tab)
-    print(cells_per_sample)
-
     a.mat <- actual ### convert actual porpotion out of table object type
     b.mat <- predictions ## gather estimated cells per cluster up
     a <- as.vector(a.mat * cells_per_sample) # multiply the actual proportion table against the total cells to get cells-per-cluster
@@ -99,5 +99,5 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
     values_ACE = c(values_ACE,sum(abs(a-b)))
     values_res = c(values_res,res)
   }
-  return(data.frame("MAE"=values_mae,"RES"=values_res))
+  return(data.frame("ACE"=values_ACE,"RES"=values_res))
 }
