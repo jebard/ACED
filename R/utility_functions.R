@@ -91,10 +91,13 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
     print(predictions)
     print("Calculating ACE")
 
-    samples <- ncol(actual)
+    samples <- nrow(actual)
     # next get the number of clusters in the object
-    clusts <- nrow(actual)
+    clusts <- ncol(actual)
+    print(samples)
+    print(clusts)
     m <- matrix(rnorm(samples * clusts,mean(actual),sd = 1), nrow=samples)
+    print(m)
     #m <- matrix(rnorm(samples * clusts,mean(actual_proportion),sd = sd(actual_proportion)), nrow=samples)
     prob <- exp(m)/rowSums(exp(m))
 
