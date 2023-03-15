@@ -67,6 +67,7 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,start=0.1,stop=1,step=0.25){
     system(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/",bulk_tsv," -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv.",res),TRUE)
     predictions = read.table(file=paste0("GEDIT_Deconv.",res,"_CTPredictions.tsv"),header = TRUE, row.names = 1, sep = "\t")
     actual = read.table(file=paste0("ACED_ActProp",res,".csv"),header=T,row.names = 1,sep = ",")
+    actual <- actual[rownames(actual)%in% rownames(predictions),]
     print(actual)
     print(predictions)
     print("calculating abs mean")
