@@ -106,7 +106,7 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
     #m <- matrix(rnorm(samples * clusts,mean(actual_proportion),sd = sd(actual_proportion)), nrow=samples)
     prob <- exp(m)/rowSums(exp(m))
     back <- as.vector(prob * cells_per_sample) ## background error rate
-    ACE_Boot <- rbind(ACE_Boot,prob)
+    ACE_Boot <- rbind(ACE_Boot,sum(abs(a-back)))
     }
 
     values_ACE = c(values_ACE,sum(abs(a-b)))
