@@ -58,7 +58,7 @@ PlotClusterBreakpoints <- function(drrsd_object){
 }
 
 
-validate_bulk_gedit <- function(bulk_tsv=NULL,cps=NULL,start=0.1,stop=1,step=0.25){
+validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=0.25){
   values_ACE = c()
   values_res = c()
   for (res in c(seq(from=start,to=stop,by=step))){
@@ -84,14 +84,15 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,cps=NULL,start=0.1,stop=1,step=0.2
 
     print("calculating abs mean")
 
-    tab <- table(Obradovic$orig.ident)
+    tab <- table(refObj$orig.ident)
     tab <- tab[names(tab) %in% rownames(predictions)]
     print(tab)
+
     cells_per_sample <- as.vector(tab) ## calculate the number of cells-per-patient
     print(cells_per_sample)
 
-    a.mat <- unclass(actual) ### convert actual porpotion out of table object type
-    b.mat <- as.matrix(predictions) ## gather estimated cells per cluster up
+    a.mat <- actual ### convert actual porpotion out of table object type
+    b.mat <- predictions ## gather estimated cells per cluster up
     a <- as.vector(a.mat * cells_per_sample) # multiply the actual proportion table against the total cells to get cells-per-cluster
     b <- as.vector(b.mat * cells_per_sample) # multiply the estimated proportion table against the total cells to get cells-per-cluster
     values_ACE = c(values_ACE,sum(abs(a-b)))
