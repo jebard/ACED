@@ -58,8 +58,8 @@ PlotClusterBreakpoints <- function(drrsd_object){
 }
 
 
-validate_bulk_gedit <- function(bulk_tsv=NULL,start=0.1,stop=1,step=0.25){
-  values_mae = c()
+validate_bulk_gedit <- function(bulk_tsv=NULL,cps=NULL,start=0.1,stop=1,step=0.25){
+  values_ACE = c()
   values_res = c()
   for (res in c(seq(from=start,to=stop,by=step))){
     message("Running GEDIT3 against BULK Truth using the following settings:")
@@ -67,7 +67,8 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,start=0.1,stop=1,step=0.25){
     system(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/",bulk_tsv," -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv.",res),TRUE)
     predictions = read.table(file=paste0("GEDIT_Deconv.",res,"_CTPredictions.tsv"),header = TRUE, row.names = 1, sep = "\t")
     actual = read.table(file=paste0("ACED_ActProp",res,".csv"),header=T,row.names = 1,sep = ",")
-    actual <- actual[rownames(actual)%in% rownames(predictions),]
+
+    predictions <- predictions[rownames(actual),]
     actual <- actual[rownames(predictions),]
     actual <- unlist(actual)
     print(actual)
@@ -75,9 +76,14 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,start=0.1,stop=1,step=0.25){
     print(predictions)
     print("calculating abs mean")
 
-    nmae <- mean(unlist(abs(predictions - actual)))/mean(unlist(actual))
-    mae <- mean(unlist(abs(predictions - actual)))
-    values_mae = c(values_mae,mae)
+    tab <- table(Obradovic$orig.ident)
+    tab <- tab[names(tab) %in% rownames(predictions)]
+    cells_per_sample <- as.vector(tab) ## calculate the number of cells-per-patient
+    a.mat <- unclass(actual) ### convert actual porpotion out of table object type
+    b.mat <- as.matrix(predictions) ## gather estimated cells per cluster up
+    a <- as.vector(a.mat * cells_per_sample) # multiply the actual proportion table against the total cells to get cells-per-cluster
+    b <- as.vector(b.mat * cells_per_sample) # multiply the estimated proportion table against the total cells to get cells-per-cluster
+    values_ACE = c(values_ACE,sum(abs(a-b)))
     values_res = c(values_res,res)
   }
   return(data.frame("MAE"=values_mae,"RES"=values_res))
