@@ -70,10 +70,16 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,cps=NULL,start=0.1,stop=1,step=0.2
 
     predictions <- predictions[rownames(actual),]
     actual <- actual[rownames(predictions),]
-    actual <- unlist(actual)
-    print(actual)
-    predictions <- unlist(predictions)
+
     print(predictions)
+    print(actual)
+
+    actual <- unclass(actual)
+    predictions <- unclass(predictions)
+
+    print(actual)
+    print(predictions)
+
     print("calculating abs mean")
 
     tab <- table(Obradovic$orig.ident)
