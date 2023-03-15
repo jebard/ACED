@@ -76,7 +76,8 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,start=0.1,stop=1,step=0.25){
     print("calculating abs mean")
 
     nmae <- mean(unlist(abs(predictions - actual)))/mean(unlist(actual))
-    values_mae = c(values_mae,nmae)
+    mae <- mean(unlist(abs(predictions - actual)))/mean(unlist(actual))
+    values_mae = c(values_mae,mae)
     values_res = c(values_res,res)
   }
   return(data.frame("MAE"=values_mae,"RES"=values_res))
