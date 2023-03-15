@@ -56,3 +56,12 @@ PlotClusterBreakpoints <- function(drrsd_object){
   ggplot(drrsd_object,aes(x=Resolution,y=Clusters,colour=log(ACE_SCORE,2)))+ geom_point() +
     viridis::scale_colour_viridis(direction = -1) + theme_minimal() +ylab("Clusters") + labs(colour="Log2 Ace")
 }
+
+
+validate_bulk_gedit <- function(bulk_tsv=NULL,start=0.1,stop=1,step=0.25){
+  for (res in c(seq(from=start,to=stop,by=step))){
+    message("Running GEDIT3 against BULK Truth using the following settings:")
+    message(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/",bulk_tsv," -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv_Bulk.",res))
+    system(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/",bulk_tsv," -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv.",res),TRUE)
+  }
+}
