@@ -86,8 +86,8 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
 
     tab <- table(refObj$orig.ident)
     tab <- tab[names(tab) %in% rownames(predictions)]
+    tab <- unclass(tab)
     print(tab)
-
     cells_per_sample <- as.vector(tab) ## calculate the number of cells-per-patient
     print(cells_per_sample)
 
