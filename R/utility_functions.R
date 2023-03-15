@@ -82,8 +82,8 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
     cells_per_sample <- as.vector(tab)
     print(cells_per_sample)
 
-    actual <- as.vector(as.matrix(actual))
-    predictions <- as.vector(as.matrix(predictions))
+    actual <- as.matrix(actual)
+    predictions <- as.matrix(predictions)
 
     print("Act:")
     print(actual)
