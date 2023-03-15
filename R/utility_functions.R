@@ -69,11 +69,14 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,start=0.1,stop=1,step=0.25){
     actual = read.table(file=paste0("ACED_ActProp",res,".csv"),header=T,row.names = 1,sep = ",")
     actual <- actual[rownames(actual)%in% rownames(predictions),]
     actual <- actual[rownames(predictions),]
+    actual <- unlist(actual)
     print(actual)
+    predictions <- unlist(predictions)
     print(predictions)
     print("calculating abs mean")
-    calculate_mean_absolute_error(actual,predictions)
-    values_mae = c(values_mae,calculate_mean_absolute_error(actual,predictions))
+
+    nmae <- mean(unlist(abs(predictions - actual)))/mean(unlist(actual))
+    values_mae = c(values_mae,nmae)
     values_res = c(values_res,res)
   }
   return(data.frame("MAE"=values_mae,"RES"=values_res))
