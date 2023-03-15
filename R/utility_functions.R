@@ -76,8 +76,8 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,cps=NULL,start=0.1,stop=1,step=0.2
     print("Act:")
     print(actual)
 
-    actual <- as.vector(actual)
-    predictions <- as.vector(predictions)
+    actual <- as.vector(as.matrix(actual))
+    predictions <- as.vector(as.matrix(predictions))
 
     print(actual)
     print(predictions)
@@ -86,7 +86,10 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,cps=NULL,start=0.1,stop=1,step=0.2
 
     tab <- table(Obradovic$orig.ident)
     tab <- tab[names(tab) %in% rownames(predictions)]
+    print(tab)
     cells_per_sample <- as.vector(tab) ## calculate the number of cells-per-patient
+    print(cells_per_sample)
+
     a.mat <- unclass(actual) ### convert actual porpotion out of table object type
     b.mat <- as.matrix(predictions) ## gather estimated cells per cluster up
     a <- as.vector(a.mat * cells_per_sample) # multiply the actual proportion table against the total cells to get cells-per-cluster
