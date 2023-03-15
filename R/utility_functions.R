@@ -61,13 +61,13 @@ PlotClusterBreakpoints <- function(drrsd_object){
 validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=0.25){
   values_ACE = c()
   values_res = c()
+  values_BACE =c()
   for (res in c(seq(from=start,to=stop,by=step))){
     message("Running GEDIT3 against BULK Truth using the following settings:")
     message(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/",bulk_tsv," -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv_Bulk.",res))
-    system(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/",bulk_tsv," -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv.",res),TRUE)
-    predictions = read.table(file=paste0("GEDIT_Deconv.",res,"_CTPredictions.tsv"),header = TRUE, row.names = 1, sep = "\t")
+    system(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/",bulk_tsv," -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv_Bulk.",res),TRUE)
+    predictions = read.table(file=paste0("GEDIT_Deconv_Bulk.",res,"_CTPredictions.tsv"),header = TRUE, row.names = 1, sep = "\t")
     actual = read.table(file=paste0("ACED_ActProp",res,".csv"),header=T,row.names = 1,sep = ",")
-
 
     actual <- actual[rownames(actual) %in% rownames(predictions),]
     predictions <- predictions[rownames(actual),]
@@ -89,15 +89,27 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
     print(actual)
     print("Pred:")
     print(predictions)
-
     print("Calculating ACE")
+
+    samples <- ncol(actual)
+    # next get the number of clusters in the object
+    clusts <- nrow(actual)
+    m <- matrix(rnorm(samples * clusts,mean(actual),sd = 1), nrow=samples)
+    #m <- matrix(rnorm(samples * clusts,mean(actual_proportion),sd = sd(actual_proportion)), nrow=samples)
+    prob <- exp(m)/rowSums(exp(m))
+
+
 
     a.mat <- actual ### convert actual porpotion out of table object type
     b.mat <- predictions ## gather estimated cells per cluster up
     a <- as.vector(a.mat * cells_per_sample) # multiply the actual proportion table against the total cells to get cells-per-cluster
     b <- as.vector(b.mat * cells_per_sample) # multiply the estimated proportion table against the total cells to get cells-per-cluster
+    back <- as.vector(prob * cells_per_sample) ## background error rate
+
     values_ACE = c(values_ACE,sum(abs(a-b)))
+    values_BACE = c(values_BACE,sum(abs(a-back)))
     values_res = c(values_res,res)
+
   }
   return(data.frame("ACE"=values_ACE,"RES"=values_res))
 }
