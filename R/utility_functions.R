@@ -98,6 +98,7 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
     #m <- matrix(rnorm(samples * clusts,mean(actual_proportion),sd = sd(actual_proportion)), nrow=samples)
     prob <- exp(m)/rowSums(exp(m))
 
+    print(prob)
 
 
     a.mat <- actual ### convert actual porpotion out of table object type
