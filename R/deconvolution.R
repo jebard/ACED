@@ -107,7 +107,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy,res){
 
   ### next we gather the various metrics and report back
   actual_proportion <- get_cluster_proportions(ref_obj)
-  write.csv(file=paste0("ACED_ActProp",res,".csv"),actual_proportion,row.names = 1)
+  write.csv(file=paste0("ACED_ActProp",res,".csv"),actual_proportion)
   cluster_cell_counts <- get_cluster_cell_counts(ref_obj)
   random_proportions <- get_random_proportions(ref_obj)
   ## verify the row orders are equivalent
