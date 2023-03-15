@@ -23,7 +23,7 @@ calculate_cell_absolute_error <- function(actual_prop,estimated_proportion,clust
 calculate_mean_absolute_error <- function(actual_prop,estimated_proportion){
   avp <- as.vector(actual_prop)
   evp <- as.vector(as.matrix(estimated_proportion))
-  return(mean(abs(avp - evp)))
+  return(mean(abs(avp - evp))/mean(avp))
 }
 
 calculate_relative_squared_error <- function(actual_prop,estimated_proportion){
