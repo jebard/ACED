@@ -38,7 +38,7 @@ ACED <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
       ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=algorithm,verbose=T)
       }
     #}
-    gedit_results <- evaluate_deconvolution(ref_obj,query_obj,strategy)
+    gedit_results <- evaluate_deconvolution(ref_obj,query_obj,strategy,res)
 
     ##print(paste0("Res:",res,",",length(levels(ref_obj$seurat_clusters)),",",gedit_results))
     values_mae = c(values_mae,gedit_results[1])
@@ -91,7 +91,7 @@ ACED <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
 #' @return matrix of sample-to-cell type predicted values.
 #' @export
 #' @examples
-evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
+evaluate_deconvolution <- function(ref_obj, query_obj, strategy,res){
   ### first, launch the deconvolution analysis and get the results
   estimated_proportions <- NULL
   if(strategy=="bayesprism"){
@@ -99,7 +99,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy){
   } else if (strategy=="music") {
     estimated_proportions <- run_music(ref_obj)
   } else if (strategy=="gedit"){
-    estimated_proportions <- run_gedit(ref_obj,query_obj)
+    estimated_proportions <- run_gedit(ref_obj,query_obj,res)
   } else {
     warning("Invalid deconvolution strategy specified")
   }

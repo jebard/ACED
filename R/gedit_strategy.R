@@ -5,14 +5,14 @@ library(Seurat)
 ###
 ### python2.7 GEDIT2.py -mix MixtureFullRefOrig.csv  -ref FullRefOrig.csv
 
-run_gedit <- function(ref_obj,query_obj){
+run_gedit <- function(ref_obj,query_obj,res){
   message("Please cite GEDIT3 Nadel et al. https://doi.org/10.1093/gigascience/giab002")
   message("Preparing the reference object for GEDIT3")
-  gedit_prep_reference(ref_obj)
+  gedit_prep_reference(ref_obj,res)
   message("Preparing the query object for GEDIT3")
   gedit_prep_query(query_obj)
   message("Running GEDIT3 deconvolution...")
-  execute_gedit()
+  execute_gedit(res)
   message("Gathering GEDIT3 results")
   predictions <- gedit_gather_results()
   return(predictions)
@@ -21,7 +21,7 @@ run_gedit <- function(ref_obj,query_obj){
 gedit_prep_reference <- function(ref_obj){
   ### save out the reference GEDIT object
   Seurat::Idents(ref_obj) <- "seurat_clusters"
-  write.csv(file="RefObj.csv",Seurat::AverageExpression(ref_obj,assays = "RNA",slot = "counts")$RNA)
+  write.csv(file=paste0("RefObj",res,".csv",Seurat::AverageExpression(ref_obj,assays = "RNA",slot = "counts")$RNA)
 }
 
 gedit_prep_query <- function(query_obj){
@@ -32,8 +32,8 @@ gedit_prep_query <- function(query_obj){
 
 execute_gedit <- function(){
   message("Running GEDIT3 using the following settings:")
-  message(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.csv -outFile $PWD/GEDIT_Deconv"))
-  system(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.csv -outFile $PWD/GEDIT_Deconv"),TRUE)
+  message(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.",res,"csv -outFile $PWD/GEDIT_Deconv"))
+  system(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.",res,"csv -outFile $PWD/GEDIT_Deconv"),TRUE)
 }
 
 gedit_gather_results <- function(){
