@@ -2,7 +2,7 @@
 # @author jbard
 #
 
-PlotACED <- function(df,xaxis="resolution"){
+PlotACED_Original <- function(df,xaxis="resolution"){
   if (xaxis == "cluster"){
     optimal_cluster = order(df$ACE_SCORE,decreasing = T)[1]
     optimal_cluster = df$Clusters[optimal_cluster]
@@ -116,3 +116,13 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
   }
   return(data.frame("ACE"=values_ACE,"Resolution"=values_res,"ACE_Random"=values_BACE,"ACE_SCORE"=(values_BACE-values_ACE)))
 }
+
+### Updating ACE plotting to ggplot style
+PlotACED <- function(ace.results){
+  ggplot(ace.results,aes(x=Resolution,y=ACE_SCORE)) + geom_point() + geom_smooth() +
+    geom_point(x=get_optimal_resolution(ace.results),
+               y=ace.results[ace.results$Resolution == get_optimal_resolution(ace.results),]$ACE_SCORE,
+               shape=3,color="red") + theme_minimal(base_size = 12) + ylab("ACE Score")+
+    geom_vline(xintercept = maximum,color="red")
+}
+
