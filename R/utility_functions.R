@@ -123,6 +123,6 @@ PlotACED <- function(ace.results){
     geom_point(x=get_optimal_resolution(ace.results),
                y=ace.results[ace.results$Resolution == get_optimal_resolution(ace.results),]$ACE_SCORE,
                shape=3,color="red") + theme_minimal(base_size = 12) + ylab("ACE")+
-    geom_vline(xintercept = maximum,color="red") + labs(subtitle = paste0("ACED res:",get_optimal_resolution(ace.results)))
+    labs(subtitle = paste0("ACED res:",get_optimal_resolution(ace.results)))
 }
 
