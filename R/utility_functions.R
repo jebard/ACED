@@ -118,11 +118,11 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
 }
 
 ### Updating ACE plotting to ggplot style
-PlotACED <- function(ace.results){
+PlotACED <- function(ace.results,title=""){
   ggplot(ace.results,aes(x=Resolution,y=ACE_SCORE)) + geom_point() + geom_smooth() +
     geom_point(x=get_optimal_resolution(ace.results),
                y=ace.results[ace.results$Resolution == get_optimal_resolution(ace.results),]$ACE_SCORE,
                shape=3,color="red") + theme_minimal(base_size = 12) + ylab("ACE")+
-    labs(subtitle = paste0("ACED res:",get_optimal_resolution(ace.results)))
+    labs(subtitle = paste0("ACED res :",get_optimal_resolution(ace.results))) + ggtitle(title)
 }
 
