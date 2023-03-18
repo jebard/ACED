@@ -2,7 +2,7 @@
 # Ingests a request to run cellular deconvolution, returns a normalized result regardless of strategy
 # @author jbard
 
-#' DRRSD Define a reference resolution for single-cell deconvolution
+#' ACED Define a reference resolution for single-cell deconvolution
 #'
 #' @param ref_obj Seurat reference scRNA object
 #' @param strategy Deconvolution strategy, default="gedit" or "music"
@@ -12,10 +12,10 @@
 #' @param algorithm Clustering strategy, "louvain" or "leiden"
 #' @param method matrix or igraph strategys if using leiden clustering
 #'
-#' @return dataFrame of resulting metrics that DRRSD generates
-#' @export DRRSD
+#' @return dataFrame of resulting metrics that ACED generates
+#' @export ACED
 #'
-#' @examples DRRSD(Seurat.object, start = 0.05,stop=.7,step=0.01,algorithm="louvain",strategy="gedit")
+#' @examples ACED(Seurat.object, start = 0.05,stop=.7,step=0.01,algorithm="louvain",strategy="gedit")
 ACED <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
                   step=.05,algorithm="louvain",method="matrix"){
 

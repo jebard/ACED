@@ -14,7 +14,7 @@ PlotACED_Original <- function(df,xaxis="resolution"){
     points(df$ACE_SCORE~df$Clusters,col="darkgreen")
     points(df$ACE~df$Clusters,col="blue")
     abline(v=optimal_cluster,h=max(df$ACE_SCORE),lty=3,col="orange")
-    legend("top",inset=c(-0.2,0),legend=c("Background ACE", "Prediction ACE","DRRSD Score"),fill = c("red","blue","darkgreen"),xpd=TRUE)
+    legend("top",inset=c(-0.2,0),legend=c("Background ACE", "Prediction ACE","ACED Score"),fill = c("red","blue","darkgreen"),xpd=TRUE)
   } else {
     optimal_cluster = order(df$ACE_SCORE,decreasing = T)[1]
     optimal_cluster = df$Resolution[optimal_cluster]
@@ -39,21 +39,21 @@ permute_within_rows <- function(x) {
   return(x)
 }
 
-get_optimal_resolution <- function(drrsd_object){
-  return(drrsd_object[head(n=1,order(drrsd_object$ACE_SCORE,decreasing = T)),]$Resolution)
+get_optimal_resolution <- function(aced_object){
+  return(aced_object[head(n=1,order(aced_object$ACE_SCORE,decreasing = T)),]$Resolution)
 }
 
-get_top_resolutions <- function(drrsd_object,n=3){
-  return(head(drrsd_object[order(drrsd_object$ACE_SCORE,decreasing = T),]$Resolution,n=n))
+get_top_resolutions <- function(aced_object,n=3){
+  return(head(aced_object[order(aced_object$ACE_SCORE,decreasing = T),]$Resolution,n=n))
 }
 
-get_least_optimal_resolution <- function(drrsd_object){
-  return(drrsd_object[head(n=1,order(drrsd_object$ACE_SCORE,decreasing = F)),]$Resolution)
+get_least_optimal_resolution <- function(aced_object){
+  return(aced_object[head(n=1,order(aced_object$ACE_SCORE,decreasing = F)),]$Resolution)
 }
 
 
-PlotClusterBreakpoints <- function(drrsd_object){
-  ggplot(drrsd_object,aes(x=Resolution,y=Clusters,colour=log(ACE_SCORE,2)))+ geom_point() +
+PlotClusterBreakpoints <- function(aced_object){
+  ggplot(aced_object,aes(x=Resolution,y=Clusters,colour=log(ACE_SCORE,2)))+ geom_point() +
     viridis::scale_colour_viridis(direction = -1) + theme_minimal() +ylab("Clusters") + labs(colour="Log2 Ace")
 }
 
@@ -64,8 +64,8 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
   values_BACE =c()
   for (res in c(seq(from=start,to=stop,by=step))){
     message("Running GEDIT3 against BULK Truth using the following settings:")
-    message(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/",bulk_tsv," -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv_Bulk.",res))
-    system(paste0(py_config()$python," ",package_info("DRRSD")$path,"/GEDIT3.py -mix $PWD/",bulk_tsv," -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv_Bulk.",res),TRUE)
+    message(paste0(py_config()$python," ",package_info("ACED")$path,"/GEDIT3.py -mix $PWD/",bulk_tsv," -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv_Bulk.",res))
+    system(paste0(py_config()$python," ",package_info("ACED")$path,"/GEDIT3.py -mix $PWD/",bulk_tsv," -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv_Bulk.",res),TRUE)
     predictions = read.table(file=paste0("GEDIT_Deconv_Bulk.",res,"_CTPredictions.tsv"),header = TRUE, row.names = 1, sep = "\t")
     actual = read.table(file=paste0("ACED_ActProp",res,".csv"),header=T,row.names = 1,sep = ",")
 

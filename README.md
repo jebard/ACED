@@ -19,10 +19,10 @@ library(ACED)
 aced.res <- ACED(Seurat.Object,start = 0.01,stop=.5,step=0.025)
 
 #### Plotting the default resolution view
-PlotACED(drrsd.res,xaxis="resolution")
+PlotACED(aced.res,title="ACED")
 
 #### Plotting the optional cluster based view. Multiple resolutions hit the same cluster
-PlotACED(drrsd.res,xaxis="cluster")
+PlotACED(aced.res,xaxis="cluster")
 
 #### Calculate and plot the most optimal UMAP clustering resolution
 Seurat.Object <- FindClusters(Seurat.Object,resolution = get_optimal_resolution(aced.res))
