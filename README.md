@@ -12,34 +12,41 @@ Advances in cellular deconvolution algorithms have artfully leveraged single-cel
 ## For GEDIT3 Deconvolution
 GEDIT3 comes prepackages within ACED, so there is no need to download the actual algorithm itself. However GEDIT3 requires the python packages:
 
+```
   random
   numpy
+```
 
 In addition, ACED assumes that your python installation is seen by your R. In R Studio this can be set by going to "Tools > Global Options > Python > Setting interpreter" You can test that this is working using the R pacakage "reticulate" function py_config()$python
 
 
 ## ACED INSTALL
-install_github("jebard/ACED",force = T)
+```install_github("jebard/ACED",force = T)
 library(ACED)
+```
 
 
 ## To Run ACED on a Seurat v3 or greater data object
 
 ACED currently assumes that your Seurat object sample names are stored in Seurat.Object$orig.ident. This field is set when creating the initial object. Please verify that your sample names are properly set in this field.
-
+```
 aced.res <- ACED(Seurat.Object,start = 0.01,stop=.5,step=0.1)
-
+```
 In testing, we have found that starting with a relative broad range between start and stop, with fairly big steps help identify general trends in the data, and then subsequent tests can fine tune the exact range and step size. 
 
 #### Plotting the default resolution view
+```
 PlotACED(aced.res,title="ACED")
-
+```
 #### Calculate and plot the most optimal UMAP clustering resolution
+```
 Seurat.Object <- FindClusters(Seurat.Object,resolution = get_optimal_resolution(aced.res))
-
 DimPlot(Seurat.Object)
+```
 
 #### Calculate and plot the least optimal UMAP clustering resolution
+```
 Seurat.Object <- FindClusters(Seurat.Object,resolution = get_least_optimal_resolution(aced.res))
 DimPlot(Seurat.Object)
+```
 
