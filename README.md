@@ -21,7 +21,10 @@ In addition, ACED assumes that your python installation is seen by your R. In R 
 
 
 ## ACED INSTALL
-```install_github("jebard/ACED",force = T)
+We recommend using the devtools library install_github function for installation: 
+
+```
+install_github("jebard/ACED",force = T)
 library(ACED)
 ```
 
