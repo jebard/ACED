@@ -34,6 +34,23 @@ library(ACED)
 ACeD currently assumes that your Seurat object sample names are stored in Seurat.Object$orig.ident. This field is set when creating the initial object. Please verify that your sample names are properly set in this field.
 ```
 aced.res <- ACED(Seurat.Object,start = 0.01,stop=.5,step=0.1)
+
+#' ACED Define a reference resolution for single-cell deconvolution
+#'
+#' @param ref_obj Seurat reference scRNA object
+#' @param strategy Deconvolution strategy, default="gedit" or "music"
+#' @param start minimum resolution to pass to Seurats FindClusters
+#' @param stop maximum resolution to pass to Seurats FindClusters
+#' @param step increment resolution to step from start to stop resolutions
+#' @param algorithm Clustering strategy, default="louvain" or "leiden"
+#' @param method default="matrix" or igraph strategys if using leiden clustering
+#'
+#' @return dataFrame of resulting metrics that ACED generates
+#' @export ACED
+#'
+#' @examples ACED(Seurat.object, start = 0.05,stop=.7,step=0.01,algorithm="louvain",strategy="gedit")
+
+
 ```
 In testing, we have found that starting with a relative broad range between start and stop, with fairly big steps help identify general trends in the data, and then subsequent tests can fine tune the exact range and step size. 
 
