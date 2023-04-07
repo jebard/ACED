@@ -13,10 +13,11 @@ run_music <- function(ref_object){
   SC.eset <- music_prep_reference(music.input = ref_object)
   message("Preparing the query object for MUSIC")
   bulk.eset <- music_prep_query(ref_obj = ref_object)
+  bulk.eset.mat <- Biobase::exprs(bulk.eset)
   # Estimate cell type proportions
   print("Running MUSIC ...")
-  estimated.prop = music_prop(bulk.eset = bulk.eset,
-                              sc.sce = SC.eset,
+  estimated.prop = music_prop(bulk.eset = bulk.eset.mat,
+                              sc.eset = SC.eset,
                               clusters = 'cellType',
                               samples = 'SubjectName', verbose = T)
   return(as.data.frame(estimated.prop$Est.prop.weighted))
