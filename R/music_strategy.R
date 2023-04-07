@@ -18,12 +18,18 @@ run_music <- function(ref_object){
   print("Running MUSIC ...")
   estimated.prop = music_prop(bulk.mtx = bulk.eset.mat,
                               sc.sce = SC.eset,
-                              clusters = 'cellType',
-                              samples = 'SubjectName', verbose = T)
+                              clusters = 'seurat_clusters',
+                              samples = 'orig.ident', verbose = T)
   return(as.data.frame(estimated.prop$Est.prop.weighted))
 }
 
+
 music_prep_reference <- function(music.input=NULL){
+  SC.eset = as.SingleCellExperiment(music.input,assay="RNA")
+  return(SC.sce)
+}
+
+music_prep_reference_old <- function(music.input=NULL){
   scCounts = music.input@assays$RNA@counts
   individual.labels = music.input@assays$RNA@data@Dimnames[[2]]
   #individual.labels = colnames(MuWT.Pseudotime@assays$integrated@data)
