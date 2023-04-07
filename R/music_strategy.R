@@ -16,7 +16,7 @@ run_music <- function(ref_object){
   bulk.eset.mat <- Biobase::exprs(bulk.eset)
   # Estimate cell type proportions
   print("Running MUSIC ...")
-  estimated.prop = music_prop(bulk.eset = bulk.eset.mat,
+  estimated.prop = music_prop(bulk.mtx = bulk.eset.mat,
                               sc.eset = SC.eset,
                               clusters = 'cellType',
                               samples = 'SubjectName', verbose = T)
