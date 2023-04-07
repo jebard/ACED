@@ -15,7 +15,7 @@ run_music <- function(ref_object){
   bulk.eset <- music_prep_query(ref_obj = ref_object)
   # Estimate cell type proportions
   print("Running MUSIC ...")
-  estimated.prop = music_prop(exprs(bulk.eset),
+  estimated.prop = music_prop(bulk.eset,
                               SC.eset,
                               clusters = 'cellType',
                               samples = 'SubjectName', verbose = T)
