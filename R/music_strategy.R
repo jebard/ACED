@@ -52,6 +52,7 @@ music_prep_query <- function(ref_obj=NULL){
   scrna.exp <- AverageExpression(ref_obj,assays = "RNA",slot = "counts")
   # row names identify features and column names identify samples.
   scrna.exp <- scrna.exp$RNA
-  pseudobulk.eset = ExpressionSet(assayData = scrna.exp)
-  return(pseudobulk.eset)
+  #pseudobulk.eset = ExpressionSet(assayData = scrna.exp)
+  return(scrna.exp)
+  #return(pseudobulk.eset)
 }
