@@ -25,7 +25,7 @@ run_music <- function(ref_object){
 
 
 music_prep_reference <- function(music.input=NULL){
-  SC.eset = as.SingleCellExperiment(music.input,assay="RNA")
+  SC.sce = as.SingleCellExperiment(music.input,assay="RNA")
   return(SC.sce)
 }
 
