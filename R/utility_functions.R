@@ -64,7 +64,7 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
   values_BACE =c()
   for (res in c(seq(from=start,to=stop,by=step))){
     message("Running GEDIT3 against BULK Truth using the following settings:")
-    system(py_config()$python," ",package_info(include_base = F)$library[1],"/ACED/GEDIT3.py -mix $PWD/",bulk_tsv," -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv")
+    system(paste0(py_config()$python," ",package_info(include_base = F)$library[1],"/ACED/GEDIT3.py -mix $PWD/",bulk_tsv," -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv"),TRUE)
     #message(paste0(py_config()$python," ",package_info("ACED")$path,"/GEDIT3.py -mix $PWD/",bulk_tsv," -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv_Bulk.",res))
     #system(paste0(py_config()$python," ",package_info("ACED")$path,"/GEDIT3.py -mix $PWD/",bulk_tsv," -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv_Bulk.",res),TRUE)
     predictions = read.table(file=paste0("GEDIT_Deconv_Bulk.",res,"_CTPredictions.tsv"),header = TRUE, row.names = 1, sep = "\t")
