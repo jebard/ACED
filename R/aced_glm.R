@@ -76,14 +76,10 @@ aced_lasso <- function(ref_obj){
   num_pseudobulk_samples <-ncol(pseudobulk_data)
   num_reference_cell_types <-ncol(reference_data)
 
-  # Initialize a matrix to store proportions
-  proportions <- matrix(0, ncol = num_reference_cell_types, nrow = num_pseudobulk_samples)
-  rownames(proportions) <- colnames(pseudobulk_data)
-  colnames(proportions) <- colnames(reference_data)
   # Loop through each pseudobulk sample
 
   # Perform LASSO regression
-  lasso_model <- cv.glmnet(x = reference_cell_type, y = pseudobulk_sample, alpha = 1)  # alpha = 1 specifies LASSO regularization
+  lasso_model <- cv.glmnet(x = reference_data, y = pseudobulk_data, alpha = 1)  # alpha = 1 specifies LASSO regularization
 
   # Extract the coefficients (proportions) from the model
   coef_i <- coef(lasso_model, s = "lambda.min")
