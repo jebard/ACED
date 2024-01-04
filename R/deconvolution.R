@@ -119,6 +119,11 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy,res){
     rownames(estimated_proportions) <- rownames(actual_proportion)
   }
 
+  if(length(rownames(estimated_proportions)) == 1 && strategy == "lasso"){
+    print("Adjusting rownames because it is a single-sample in lasso")
+    rownames(estimated_proportions) <- rownames(actual_proportion)
+  }
+
   ### enforce the same column order
   estimated_proportions <- estimated_proportions[rownames(actual_proportion),]
 

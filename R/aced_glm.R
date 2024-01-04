@@ -1,4 +1,7 @@
 
+# This code extracts the coefficients from the LASSO model and normalizes
+# the non-zero coefficients to obtain the proportions. The resulting proportions
+# matrix should represent the estimated proportions of each cell type in the pseudobulk sample.
 aced_glm <- function(ref_obj){
 print("Defaulting to ACeD pseudoinverse strategy to perform linear regression-based deconvolution")
 # Define the number of pseudobulk samples and reference cell types
