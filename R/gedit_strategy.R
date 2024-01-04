@@ -32,8 +32,13 @@ gedit_prep_query <- function(query_obj){
 
 execute_gedit <- function(res){
   message("Running GEDIT3 using the following settings:")
+<<<<<<< HEAD
   message(paste0(py_config()$python," ",package_info("ACED")$path,"/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.",res,".csv -outFile $PWD/gedit3_outputs/GEDIT_Deconv"))
   system(paste0(py_config()$python," ",package_info("ACED")$path,"/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.",res,".csv -outFile $PWD/gedit3_outputs/GEDIT_Deconv"),TRUE)
+=======
+  message(paste0(py_config()$python," ",package_info(include_base = F)$library[1],"/ACED/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv"))
+  system(paste0(py_config()$python," ",package_info(include_base = F)$library[1],"/ACED/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv"),TRUE)
+>>>>>>> f2eb3d504da07900d019ce59e44112786d8eafe0
 }
 
 gedit_gather_results <- function(){
