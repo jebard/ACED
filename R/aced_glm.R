@@ -43,7 +43,7 @@ for (i in 1:num_pseudobulk_samples) {
     #coef_i <- coefficients[2]
 
     # Perform LASSO regression
-    lasso_model <- cv.glmnet(x = reference_cell_type, y = pseudobulk_sample, alpha = 1)  # alpha = 1 specifies LASSO regularization
+    lasso_model <- cv.glmnet(x = as.matrix(reference_cell_type), y = as.matrix(pseudobulk_sample),family="gaussian", alpha = 1)  # alpha = 1 specifies LASSO regularization
 
     # Extract the coefficients (proportions) from the model
     coef_i <- coef(lasso_model, s = "lambda.min")
