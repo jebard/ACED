@@ -81,17 +81,27 @@ aced_lasso <- function(ref_obj){
   # Perform LASSO regression
   lasso_model <- cv.glmnet(x = reference_data, y = as.vector(pseudobulk_data[,1]), alpha = 1)  # alpha = 1 specifies LASSO regularization
 
-  # Extract the coefficients (proportions) from the model
-  coef_i <- coef(lasso_model, s = "lambda.min")
+  # Extract coefficients from the model for the lambda that minimizes cross-validated error
+  coefficients <- coef(lasso_model, s = "lambda.min")
+
+  # Extract non-zero coefficients (those selected by LASSO)
+  nonzero_coefficients <- coefficients[-1, , drop = FALSE]
+
+  # Sum of non-zero coefficients
+  sum_nonzero <- sum(abs(nonzero_coefficients))
+
+  # Calculate proportions by normalizing non-zero coefficients
+  proportions <- nonzero_coefficients / sum_nonzero
 
 
-  coef_i[coef_i < 0] <- 0 ## if the estimated proportion is less than zero, set to zero.
+
+  #coef_i[coef_i < 0] <- 0 ## if the estimated proportion is less than zero, set to zero.
 
   # Normalize proportions so they sum to 1 for the current sample
-  coef_i <- coef_i / sum(coef_i, na.rm = TRUE)
+  #coef_i <- coef_i / sum(coef_i, na.rm = TRUE)
 
 
-  return(coef_i)
+  return(proportions)
 
 }
 
