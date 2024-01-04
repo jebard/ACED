@@ -38,16 +38,9 @@ for (i in 1:num_pseudobulk_samples) {
 
 
     # Use pseudoinverse to calculate coefficients
-    #coefficients <- ginv(design_matrix) %*% pseudobulk_sample
+    coefficients <- ginv(design_matrix) %*% pseudobulk_sample
     # Extract and threshold the coefficients
-    #coef_i <- coefficients[2]
-
-    # Perform LASSO regression
-    lasso_model <- cv.glmnet(x = as.matrix(reference_cell_type), y = as.matrix(pseudobulk_sample),family="gaussian", alpha = 1)  # alpha = 1 specifies LASSO regularization
-
-    # Extract the coefficients (proportions) from the model
-    coef_i <- coef(lasso_model, s = "lambda.min")
-
+    coef_i <- coefficients[2]
 
     coef_i[coef_i < 0] <- 0 ## if the estimated proportion is less than zero, set to zero.
 
@@ -64,3 +57,45 @@ for (i in 1:num_pseudobulk_samples) {
 
 return(proportions)
 }
+
+
+aced_lasso <- function(ref_obj){
+  print("Defaulting to ACeD Lasso Deconvolution")
+  # Define the number of pseudobulk samples and reference cell types
+  num_pseudobulk_samples <- length(ref_obj$orig.ident)
+  num_reference_cell_types <- length(ref_obj$seurat_clusters)
+
+  # Simulate pseudobulk single-cell data
+  set.seed(123)  # For reproducibility
+
+  ## Reference Pseudobulk
+  pseudobulk_data <- AverageExpression(ref_obj,assay="RNA",slot = "count",group.by="orig.ident")$RNA
+  ## Reference Query by cluster
+  reference_data <- AverageExpression(ref_obj,assays = "RNA",slot = "count",group.by="seurat_clusters")$RNA
+
+  num_pseudobulk_samples <-ncol(pseudobulk_data)
+  num_reference_cell_types <-ncol(reference_data)
+
+  # Initialize a matrix to store proportions
+  proportions <- matrix(0, ncol = num_reference_cell_types, nrow = num_pseudobulk_samples)
+  rownames(proportions) <- colnames(pseudobulk_data)
+  colnames(proportions) <- colnames(reference_data)
+  # Loop through each pseudobulk sample
+
+  # Perform LASSO regression
+  lasso_model <- cv.glmnet(x = reference_cell_type, y = pseudobulk_sample, alpha = 1)  # alpha = 1 specifies LASSO regularization
+
+  # Extract the coefficients (proportions) from the model
+  coef_i <- coef(lasso_model, s = "lambda.min")
+
+
+  coef_i[coef_i < 0] <- 0 ## if the estimated proportion is less than zero, set to zero.
+
+  # Normalize proportions so they sum to 1 for the current sample
+  coef_i <- coef_i / sum(coef_i, na.rm = TRUE)
+
+
+  return(coef_i)
+
+}
+
