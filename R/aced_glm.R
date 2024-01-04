@@ -7,17 +7,14 @@ num_reference_cell_types <- length(ref_obj$seurat_clusters)
 
 # Simulate pseudobulk single-cell data
 set.seed(123)  # For reproducibility
-#pseudobulk_data <- matrix(rpois(100 * num_pseudobulk_samples, 5), ncol = num_pseudobulk_samples)
+
+## Reference Pseudobulk
 pseudobulk_data <- AverageExpression(ref_obj,assay="RNA",slot = "count",group.by="orig.ident")$RNA
-# Simulate reference single-cell data
-#reference_data <- matrix(rpois(100 * num_reference_cell_types, 10), ncol = num_reference_cell_types)
+## Reference Query by cluster
 reference_data <- AverageExpression(ref_obj,assays = "RNA",slot = "count",group.by="seurat_clusters")$RNA
 
 num_pseudobulk_samples <-ncol(pseudobulk_data)
 num_reference_cell_types <-ncol(reference_data)
-
-# Create a sample mixture matrix (you can provide your own)
-mixture_matrix <- matrix(runif(num_pseudobulk_samples * num_reference_cell_types), ncol = num_reference_cell_types)
 
 # Initialize a matrix to store proportions
 proportions <- matrix(0, ncol = num_reference_cell_types, nrow = num_pseudobulk_samples)
@@ -44,7 +41,7 @@ for (i in 1:num_pseudobulk_samples) {
 
     # Extract and threshold the coefficients
     coef_i <- coefficients[2]
-    coef_i[coef_i < 0] <- 0
+    coef_i[coef_i < 0] <- 0 ## if the estimated proportion is less than zero, set to zero.
 
     # Store the coefficients in the vector
     sample_proportions[j] <- coef_i
