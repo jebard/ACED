@@ -36,11 +36,19 @@ for (i in 1:num_pseudobulk_samples) {
     # Create a design matrix
     design_matrix <- cbind(Intercept = 1, reference_cell_type)
 
-    # Use pseudoinverse to calculate coefficients
-    coefficients <- ginv(design_matrix) %*% pseudobulk_sample
 
+    # Use pseudoinverse to calculate coefficients
+    #coefficients <- ginv(design_matrix) %*% pseudobulk_sample
     # Extract and threshold the coefficients
-    coef_i <- coefficients[2]
+    #coef_i <- coefficients[2]
+
+    # Perform LASSO regression
+    lasso_model <- cv.glmnet(x = reference_cell_type, y = pseudobulk_sample, alpha = 1)  # alpha = 1 specifies LASSO regularization
+
+    # Extract the coefficients (proportions) from the model
+    coef_i <- coef(lasso_model, s = "lambda.min")
+
+
     coef_i[coef_i < 0] <- 0 ## if the estimated proportion is less than zero, set to zero.
 
     # Store the coefficients in the vector
