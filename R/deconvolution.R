@@ -101,7 +101,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy,res){
   } else if (strategy=="gedit"){
     estimated_proportions <- run_gedit(ref_obj,query_obj,res)
   } else {
-    estimated_proportions <- aced_glm(ref_obj)
+    estimated_proportions <- aced_lasso(ref_obj)
   }
   message("Processing predictions")
 
