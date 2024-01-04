@@ -1,6 +1,6 @@
 
 aced_glm <- function(ref_obj){
-
+print("Defaulting to ACeD pseudoinverse strategy to perform linear regression-based deconvolution")
 # Define the number of pseudobulk samples and reference cell types
 num_pseudobulk_samples <- length(ref_obj$orig.ident)
 num_reference_cell_types <- length(ref_obj$seurat_clusters)

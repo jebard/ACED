@@ -102,7 +102,6 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy,res){
     estimated_proportions <- run_gedit(ref_obj,query_obj,res)
   } else {
     estimated_proportions <- aced_glm(ref_obj)
-    warning("Defaulting to ACeD pseudoinverse strategy to perform linear regression-based deconvolution")
   }
   message("Processing predictions")
 
