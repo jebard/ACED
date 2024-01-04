@@ -94,6 +94,10 @@ aced_lasso <- function(ref_obj){
   # Extract non-zero coefficients (those selected by LASSO)
   nonzero_coefficients <- coefficients[-1, , drop = FALSE]
 
+
+  # Set negative coefficients to zero
+  nonzero_coefficients[nonzero_coefficients < 0] <- 0
+
   # Sum of non-zero coefficients
   sum_nonzero <- sum(abs(nonzero_coefficients))
 
