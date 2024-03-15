@@ -128,9 +128,8 @@ aced_lasso_spillover <- function(ref_obj,cluster=cluster){
 
   ## Reference Pseudobulk
   pseudobulk_data <- AverageExpression(ref_obj,assay="RNA",slot = "count",group.by="seurat_clusters")$RNA
-  print(head(pseudobulk_data))
   pseudobulk_data <- pseudobulk_data[,cluster]
-  print(head(pseudobulk_data))
+
   ## Reference Query by cluster
   reference_data <- AverageExpression(ref_obj,assays = "RNA",slot = "count",group.by="seurat_clusters")$RNA
 
@@ -144,7 +143,8 @@ aced_lasso_spillover <- function(ref_obj,cluster=cluster){
   # Loop through each pseudobulk sample
   for (i in 1:num_pseudobulk_samples) {
     # Perform LASSO regression
-    lasso_model <- cv.glmnet(x = reference_data, y = as.vector(pseudobulk_data[,i]), alpha = 1)  # alpha = 1 specifies LASSO regularization
+    lasso_model <- cv.glmnet(x = reference_data, y = as.vector(pseudobulk_data), alpha = 1)  # alpha = 1 specifies LASSO regularization
+    #lasso_model <- cv.glmnet(x = reference_data, y = as.vector(pseudobulk_data[,i]), alpha = 1)  # alpha = 1 specifies LASSO regularization
 
     # Extract coefficients from the model for the lambda that minimizes cross-validated error
     coefficients <- coef(lasso_model, s = "lambda.min")
