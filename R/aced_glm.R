@@ -127,8 +127,10 @@ aced_lasso_spillover <- function(ref_obj,cluster=cluster){
   set.seed(123)  # For reproducibility
 
   ## Reference Pseudobulk
+  ##TODO: AggregateExpression factors in the total number of cells instead of the average of cluster
+  #pseudobulk_data <- AverageExpression(ref_obj,assay="RNA",slot = "count",group.by="seurat_clusters")$RNA
   pseudobulk_data <- AverageExpression(ref_obj,assay="RNA",slot = "count",group.by="seurat_clusters")$RNA
-  pseudobulk_data <- pseudobulk_data[,c("0","5","9")]
+  pseudobulk_data <- pseudobulk_data[,clusters]
   pseudobulk_data <- rowMeans(pseudobulk_data)
   ## Reference Query by cluster
   reference_data <- AverageExpression(ref_obj,assays = "RNA",slot = "count",group.by="seurat_clusters")$RNA
