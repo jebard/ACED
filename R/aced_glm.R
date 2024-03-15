@@ -141,37 +141,35 @@ aced_lasso_spillover <- function(ref_obj,cluster=cluster){
   rownames(proportions) <- colnames(pseudobulk_data)
   colnames(proportions) <- colnames(reference_data)
   # Loop through each pseudobulk sample
-  for (i in 1:num_pseudobulk_samples) {
-    # Perform LASSO regression
-    lasso_model <- cv.glmnet(x = reference_data, y = as.vector(pseudobulk_data), alpha = 1)  # alpha = 1 specifies LASSO regularization
-    #lasso_model <- cv.glmnet(x = reference_data, y = as.vector(pseudobulk_data[,i]), alpha = 1)  # alpha = 1 specifies LASSO regularization
 
-    # Extract coefficients from the model for the lambda that minimizes cross-validated error
-    coefficients <- coef(lasso_model, s = "lambda.min")
+  # Perform LASSO regression
+  lasso_model <- cv.glmnet(x = reference_data, y = as.vector(pseudobulk_data), alpha = 1)  # alpha = 1 specifies LASSO regularization
+  #lasso_model <- cv.glmnet(x = reference_data, y = as.vector(pseudobulk_data[,i]), alpha = 1)  # alpha = 1 specifies LASSO regularization
 
-    # Extract non-zero coefficients (those selected by LASSO)
-    nonzero_coefficients <- coefficients[-1, , drop = FALSE]
+  # Extract coefficients from the model for the lambda that minimizes cross-validated error
+  coefficients <- coef(lasso_model, s = "lambda.min")
+
+  # Extract non-zero coefficients (those selected by LASSO)
+  nonzero_coefficients <- coefficients[-1, , drop = FALSE]
+  print(nonzero_coefficients)
+
+  # Set negative coefficients to zero
+  nonzero_coefficients[nonzero_coefficients < 0] <- 0
+
+  # Sum of non-zero coefficients
+  sum_nonzero <- sum(abs(nonzero_coefficients))
+
+  # Calculate proportions by normalizing non-zero coefficients
+  sample_proportions <- nonzero_coefficients / sum_nonzero
+  sample_proportions <- as.vector(sample_proportions)
 
 
-    # Set negative coefficients to zero
-    nonzero_coefficients[nonzero_coefficients < 0] <- 0
+  #coef_i[coef_i < 0] <- 0 ## if the estimated proportion is less than zero, set to zero.
 
-    # Sum of non-zero coefficients
-    sum_nonzero <- sum(abs(nonzero_coefficients))
-
-    # Calculate proportions by normalizing non-zero coefficients
-    sample_proportions <- nonzero_coefficients / sum_nonzero
-    sample_proportions <- as.vector(sample_proportions)
-
-
-    #coef_i[coef_i < 0] <- 0 ## if the estimated proportion is less than zero, set to zero.
-
-    # Normalize proportions so they sum to 1 for the current sample
-    #coef_i <- coef_i / sum(coef_i, na.rm = TRUE)
-    # Store the proportions in the matrix (column-wise)
-    proportions[i, ] <- sample_proportions
-  }
-  return(proportions)
+  # Normalize proportions so they sum to 1 for the current sample
+  # coef_i <- coef_i / sum(coef_i, na.rm = TRUE)
+  # Store the proportions in the matrix (column-wise)
+  return(sample_proportions)
 
 }
 
