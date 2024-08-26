@@ -266,8 +266,8 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
   upper_bound <- stop
 
   # Initial points
-  c <- upper_bound - (upper_bound - lower_bound) / golden_ratio
-  d <- lower_bound + (upper_bound - lower_bound) / golden_ratio
+  c <- start #upper_bound - (upper_bound - lower_bound) / golden_ratio
+  d <- stop #lower_bound + (upper_bound - lower_bound) / golden_ratio
 
   # Iterative Golden Section Search
   while (abs(upper_bound - lower_bound) > tolerance) {
