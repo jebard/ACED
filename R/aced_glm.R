@@ -143,9 +143,9 @@ aced_lasso_spillover <- function(ref_obj,cluster=cluster){
   num_reference_cell_types <-ncol(reference_data)
 
   # Initialize a matrix to store proportions
-  proportions <- matrix(0, ncol = num_reference_cell_types, nrow = num_pseudobulk_samples)
-  rownames(proportions) <- colnames(pseudobulk_data)
-  colnames(proportions) <- colnames(reference_data)
+  #proportions <- matrix(0, ncol = num_reference_cell_types, nrow = num_pseudobulk_samples)
+  #rownames(proportions) <- colnames(pseudobulk_data)
+  #colnames(proportions) <- colnames(reference_data)
   # Loop through each pseudobulk sample
 
   # Perform LASSO regression

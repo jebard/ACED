@@ -1,6 +1,7 @@
 #exportPattern("^[[:alpha:]]+")
 export('evaluate_deconvolution')
 export('ACED')
+exort('ACED_GS')
 export("get_random_proportions")
 export("get_cluster_proportions")
 export("calculate_cluster_tree")
