@@ -35,8 +35,8 @@ execute_gedit <- function(res){
 
   #message(paste0(py_config()$python," ",package_info(include_base = F)$library[1],"/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.",res,".csv -outFile $PWD/gedit3_outputs/GEDIT_Deconv"))
   #system(paste0(py_config()$python," ",package_info(include_base = F)$library[1],"/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.",res,".csv -outFile $PWD/gedit3_outputs/GEDIT_Deconv"),TRUE)
-  message(paste0(py_config()$python," ",package_info(include_base = F)$library[1],"/ACED/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv"))
-  system(paste0(py_config()$python," ",package_info(include_base = F)$library[1],"/ACED/GEDIT3.py -mix $PWD/MixtureQuery.csv -ref $PWD/RefObj.",res,".csv -outFile $PWD/GEDIT_Deconv"),TRUE)
+  message(paste0(py_config()$python," ",package_info(include_base = F)$library[1],"/ACED/GEDIT3.py -mix $PWD/gedit3_outputs/MixtureQuery.csv -ref $PWD/gedit3_outputs/RefObj.",res,".csv -outFile $PWD/gedit3_outputs/GEDIT_Deconv"))
+  system(paste0(py_config()$python," ",package_info(include_base = F)$library[1],"/ACED/GEDIT3.py -mix $PWD/gedit3_outputs/MixtureQuery.csv -ref $PWD/gedit3_outputs/RefObj.",res,".csv -outFile $PWD/gedit3_outputs/GEDIT_Deconv"),TRUE)
 }
 
 gedit_gather_results <- function(){
