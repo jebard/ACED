@@ -331,8 +331,8 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
     }
 
     # Update points
-    c <- round(upper_bound - (upper_bound - lower_bound) / golden_ratio,2)
-    d <- round(lower_bound + (upper_bound - lower_bound) / golden_ratio,2)
+    c <- round(upper_bound - (upper_bound - lower_bound) / golden_ratio,4)
+    d <- round(lower_bound + (upper_bound - lower_bound) / golden_ratio,4)
   }
 
   # Optimal resolution
