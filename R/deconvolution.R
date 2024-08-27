@@ -445,6 +445,7 @@ ACED_BRENT <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
                    "LMRES"=values_lm_res,"ACE"=values_ACE,"ACE_Random"=values_ACE_random,"ACE_SCORE"=values_ACE_random-values_ACE,
                    "MAE_Random"=values_MAE_random,"Resolution"=resolution,
                    "PropCorr"=values_PC,"BGM"=values_background_mean,"BGSD"=values_background_stdev)
+  df[-nrow(df),] # remove last addition by the optimization to avoid duplicating
   PlotACED(df)
   return(df)
 }
