@@ -2,6 +2,7 @@
 export('evaluate_deconvolution')
 export('ACED')
 export('ACED_GS')
+export('ACED_BRENT')
 export("get_random_proportions")
 export("get_cluster_proportions")
 export("calculate_cluster_tree")
