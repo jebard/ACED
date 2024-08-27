@@ -282,8 +282,25 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
       ref_obj <- FindClusters(ref_obj,resolution = c,algorithm=algorithm,verbose=T)
     }
     gedit_results_c <- evaluate_deconvolution(ref_obj,query_obj,strategy,c)
-    }
     clusters = c(clusters,length(levels(ref_obj$seurat_clusters)))
+    values_mae = c(values_mae,gedit_results_c[1])
+    values_rse = c(values_rse,gedit_results_c[2])
+    values_smape = c(values_smape,gedit_results_c[3])
+    values_rmse = c(values_rmse,gedit_results_c[4])
+    values_actual_zero = c(values_actual_zero,gedit_results_c[5])
+    values_predicted_zero = c(values_predicted_zero,gedit_results_c[6])
+    values_ae = c(values_ae,gedit_results_c[7])
+    values_ae_cc = c(values_ae_cc,gedit_results_c[8])
+    values_lm_res = c(values_lm_res,gedit_results_c[9])
+    values_ACE = c(values_ACE,gedit_results_c[10])
+    values_ACE_random = c(values_ACE_random,gedit_results_c[11])
+    values_MAE_random = c(values_MAE_random,gedit_results_c[12])
+    values_PC = c(values_PC,gedit_results_c[13])
+    values_background_mean = c(values_background_mean)
+    values_background_stdev = c(values_background_stdev)
+    resolution = c(resolution,c)
+    }
+
     if(!d %in% resolution){ ## if d is already calcualted, don't do it again.
     ### process D
     if(algorithm=="leiden" || algorithm == 4){
@@ -292,25 +309,26 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
       ref_obj <- FindClusters(ref_obj,resolution = d,algorithm=algorithm,verbose=T)
     }
     gedit_results_d <- evaluate_deconvolution(ref_obj,query_obj,strategy,d)
-    }
     clusters = c(clusters,length(levels(ref_obj$seurat_clusters)))
-    ##print(paste0("Res:",res,",",length(levels(ref_obj$seurat_clusters)),",",gedit_results))
-    values_mae = c(values_mae,gedit_results_c[1],gedit_results_d[1])
-    values_rse = c(values_rse,gedit_results_c[2],gedit_results_d[2])
-    values_smape = c(values_smape,gedit_results_c[3],gedit_results_d[3])
-    values_rmse = c(values_rmse,gedit_results_c[4],gedit_results_d[4])
-    values_actual_zero = c(values_actual_zero,gedit_results_c[5],gedit_results_d[5])
-    values_predicted_zero = c(values_predicted_zero,gedit_results_c[6],gedit_results_d[6])
-    values_ae = c(values_ae,gedit_results_c[7],gedit_results_d[7])
-    values_ae_cc = c(values_ae_cc,gedit_results_c[8],gedit_results_d[8])
-    values_lm_res = c(values_lm_res,gedit_results_c[9],gedit_results_d[9])
-    values_ACE = c(values_ACE,gedit_results_c[10],gedit_results_d[10])
-    values_ACE_random = c(values_ACE_random,gedit_results_c[11],gedit_results_d[11])
-    values_MAE_random = c(values_MAE_random,gedit_results_c[12],gedit_results_d[12])
-    values_PC = c(values_PC,gedit_results_c[13],gedit_results_d[13])
-    values_background_mean = c(values_background_mean,gedit_results_c[14],gedit_results_d[14])
-    values_background_stdev = c(values_background_stdev,gedit_results_c[15],gedit_results_d[15])
-    resolution = c(resolution,c,d)
+    ## update all the returns
+    values_mae = c(values_mae,gedit_results_d[1])
+    values_rse = c(values_rse,gedit_results_d[2])
+    values_smape = c(values_smape,gedit_results_d[3])
+    values_rmse = c(values_rmse,gedit_results_d[4])
+    values_actual_zero = c(values_actual_zero,gedit_results_d[5])
+    values_predicted_zero = c(values_predicted_zero,gedit_results_d[6])
+    values_ae = c(values_ae,gedit_results_d[7])
+    values_ae_cc = c(values_ae_cc,gedit_results_d[8])
+    values_lm_res = c(values_lm_res,gedit_results_d[9])
+    values_ACE = c(values_ACE,gedit_results_d[10])
+    values_ACE_random = c(values_ACE_random,gedit_results_d[11])
+    values_MAE_random = c(values_MAE_random,gedit_results_d[12])
+    values_PC = c(values_PC,gedit_results_d[13])
+    values_background_mean = c(values_background_mean,gedit_results_d[14])
+    values_background_stdev = c(values_background_stdev,gedit_results_d[15])
+    resolution = c(resolution,d)
+    }
+
 
     ## generate some on the fly plots
     plot(values_ACE_random~resolution,col="red",ylim=c(0,max(values_ACE_random + (values_ACE_random * .5))))
