@@ -374,6 +374,80 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
 
 
 
+#' ACED Define a reference resolution for single-cell deconvolution
+#'
+#' @param ref_obj Seurat reference scRNA object
+#' @param strategy Deconvolution strategy, default="gedit" or "music"
+#' @param start minimum resolution to pass to Seurats FindClusters
+#' @param stop maximum resolution to pass to Seurats FindClusters
+#' @param step increment resolution to step from start to stop resolutions
+#' @param algorithm Clustering strategy, "louvain" or "leiden"
+#' @param method matrix or igraph strategys if using leiden clustering
+#'
+#' @return dataFrame of resulting metrics that ACED generates
+#' @export ACED
+#'
+#' @examples ACED(Seurat.object, start = 0.05,stop=.7,step=0.01,algorithm="louvain",strategy="gedit")
+ACED_BRENT <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
+                    step=.05,algorithm="louvain",method="matrix"){
+  #### instantiate lists to return
+  query_obj <- ref_obj
+  values_mae = c();values_rse = c();values_smape = c();values_rmse = c()
+  values_actual_zero = c();values_predicted_zero = c();clusters = c();resolution = c();
+  values_ae = c();values_ae_cc = c();values_lm_res = c()
+  values_ACE = c();values_ACE_random = c();values_MAE_random = c();values_PC = c();
+  values_background_stdev = c(); values_background_mean = c();
+
+  clustering_objective <- function(c){
+    ### process C
+      if(algorithm=="leiden" || algorithm == 4){
+        ref_obj <- FindClusters(ref_obj,resolution = c,algorithm=algorithm,verbose=T,method=method)
+      } else {
+        ref_obj <- FindClusters(ref_obj,resolution = c,algorithm=algorithm,verbose=T)
+      }
+      gedit_results_c <- evaluate_deconvolution(ref_obj,query_obj,strategy,c)
+      clusters = c(clusters,length(levels(ref_obj$seurat_clusters)))
+      values_mae = c(values_mae,gedit_results_c[1])
+      values_rse = c(values_rse,gedit_results_c[2])
+      values_smape = c(values_smape,gedit_results_c[3])
+      values_rmse = c(values_rmse,gedit_results_c[4])
+      values_actual_zero = c(values_actual_zero,gedit_results_c[5])
+      values_predicted_zero = c(values_predicted_zero,gedit_results_c[6])
+      values_ae = c(values_ae,gedit_results_c[7])
+      values_ae_cc = c(values_ae_cc,gedit_results_c[8])
+      values_lm_res = c(values_lm_res,gedit_results_c[9])
+      values_ACE = c(values_ACE,gedit_results_c[10])
+      values_ACE_random = c(values_ACE_random,gedit_results_c[11])
+      values_MAE_random = c(values_MAE_random,gedit_results_c[12])
+      values_PC = c(values_PC,gedit_results_c[13])
+      values_background_mean = c(values_background_mean,gedit_results_c[14])
+      values_background_stdev = c(values_background_stdev,gedit_results_c[15])
+      resolution = c(resolution,c)
+      ## generate some on the fly plots
+      plot(values_ACE_random~resolution,col="red",ylim=c(0,max(values_ACE_random + (values_ACE_random * .5))))
+      arrows(x0=resolution, y0=values_background_mean-values_background_stdev,
+             x1=resolution, y1=values_background_mean+values_background_stdev,
+             code=3, angle=90, length=0.05,col="red",lty=2)
+      points(values_ACE_random-values_ACE~resolution,col="darkgreen")
+      points(values_ACE~resolution,col="blue")
+    }
+
+  interval <- c(start, stop)
+  optimize(clustering_objective, interval = interval, maximum = T,tol=step)
+
+
+  df <- data.frame("MAE"= values_mae, "RSE" = values_rse,
+                   "SMAPE" = values_smape, "RMSE" = values_rmse,
+                   "AZERO" = values_actual_zero, "PZERO"= values_predicted_zero,
+                   "Clusters" = clusters,"AE"=values_ae,"AECC"=values_ae_cc,
+                   "LMRES"=values_lm_res,"ACE"=values_ACE,"ACE_Random"=values_ACE_random,"ACE_SCORE"=values_ACE_random-values_ACE,
+                   "MAE_Random"=values_MAE_random,"Resolution"=resolution,
+                   "PropCorr"=values_PC,"BGM"=values_background_mean,"BGSD"=values_background_stdev)
+  PlotACED(df)
+  return(df)
+}
+
+
 
 
 
