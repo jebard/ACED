@@ -430,6 +430,7 @@ ACED_BRENT <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
              code=3, angle=90, length=0.05,col="red",lty=2)
       points(values_ACE_random-values_ACE~resolution,col="darkgreen")
       points(values_ACE~resolution,col="blue")
+      return(gedit_results_c[11] - gedit_results_c[10])
     }
 
   interval <- c(start, stop)
