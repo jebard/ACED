@@ -296,8 +296,8 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
     values_ACE_random = c(values_ACE_random,gedit_results_c[11])
     values_MAE_random = c(values_MAE_random,gedit_results_c[12])
     values_PC = c(values_PC,gedit_results_c[13])
-    values_background_mean = c(values_background_mean)
-    values_background_stdev = c(values_background_stdev)
+    values_background_mean = c(values_background_mean,gedit_results_c[14])
+    values_background_stdev = c(values_background_stdev,gedit_results_c[15])
     resolution = c(resolution,c)
     }
 
