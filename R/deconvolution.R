@@ -299,6 +299,13 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
     values_background_mean = c(values_background_mean,gedit_results_c[14])
     values_background_stdev = c(values_background_stdev,gedit_results_c[15])
     resolution = c(resolution,c)
+    ## generate some on the fly plots
+    plot(values_ACE_random~resolution,col="red",ylim=c(0,max(values_ACE_random + (values_ACE_random * .5))))
+    arrows(x0=resolution, y0=values_background_mean-values_background_stdev,
+           x1=resolution, y1=values_background_mean+values_background_stdev,
+           code=3, angle=90, length=0.05,col="red",lty=2)
+    points(values_ACE_random-values_ACE~resolution,col="darkgreen")
+    points(values_ACE~resolution,col="blue")
     }
 
     if(!d %in% resolution){ ## if d is already calcualted, don't do it again.
@@ -327,9 +334,6 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
     values_background_mean = c(values_background_mean,gedit_results_d[14])
     values_background_stdev = c(values_background_stdev,gedit_results_d[15])
     resolution = c(resolution,d)
-    }
-
-
     ## generate some on the fly plots
     plot(values_ACE_random~resolution,col="red",ylim=c(0,max(values_ACE_random + (values_ACE_random * .5))))
     arrows(x0=resolution, y0=values_background_mean-values_background_stdev,
@@ -337,7 +341,7 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
            code=3, angle=90, length=0.05,col="red",lty=2)
     points(values_ACE_random-values_ACE~resolution,col="darkgreen")
     points(values_ACE~resolution,col="blue")
-
+    }
     ### finalize the "score" for this resolution
     c_score <- gedit_results_c[11] -  gedit_results_c[10]
     d_score <- gedit_results_d[11] -  gedit_results_d[10]
