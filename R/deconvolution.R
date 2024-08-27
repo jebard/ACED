@@ -275,6 +275,7 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
     print(paste0("D: ",d))
 
     ### process C
+    if(!c %in% resolution){ ## if c is already calcualted, don't do it again.
     if(algorithm=="leiden" || algorithm == 4){
       ref_obj <- FindClusters(ref_obj,resolution = c,algorithm=algorithm,verbose=T,method=method)
     } else {
@@ -282,7 +283,8 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
     }
     gedit_results_c <- evaluate_deconvolution(ref_obj,query_obj,strategy,c)
     clusters = c(clusters,length(levels(ref_obj$seurat_clusters)))
-
+    }
+    if(!d %in% resolution){ ## if d is already calcualted, don't do it again.
     ### process D
     if(algorithm=="leiden" || algorithm == 4){
       ref_obj <- FindClusters(ref_obj,resolution = d,algorithm=algorithm,verbose=T,method=method)
@@ -291,7 +293,7 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
     }
     gedit_results_d <- evaluate_deconvolution(ref_obj,query_obj,strategy,d)
     clusters = c(clusters,length(levels(ref_obj$seurat_clusters)))
-
+    }
     ##print(paste0("Res:",res,",",length(levels(ref_obj$seurat_clusters)),",",gedit_results))
     values_mae = c(values_mae,gedit_results_c[1],gedit_results_d[1])
     values_rse = c(values_rse,gedit_results_c[2],gedit_results_d[2])
@@ -329,8 +331,8 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
     }
 
     # Update points
-    c <- upper_bound - (upper_bound - lower_bound) / golden_ratio
-    d <- lower_bound + (upper_bound - lower_bound) / golden_ratio
+    c <- round(upper_bound - (upper_bound - lower_bound) / golden_ratio,2)
+    d <- round(lower_bound + (upper_bound - lower_bound) / golden_ratio,2)
   }
 
   # Optimal resolution
