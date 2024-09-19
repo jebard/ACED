@@ -109,7 +109,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy,res){
   actual_proportion <- get_cluster_proportions(ref_obj)
   write.csv(file=paste0("ACED_ActProp",res,".csv"),actual_proportion)
   cluster_cell_counts <- get_cluster_cell_counts(ref_obj)
-  random_proportions <- get_random_proportions(ref_obj)
+  random_proportions <- get_random_proportions_probability_simplex(ref_obj)
   ## verify the row orders are equivalent
   print("Actual:")
   print(actual_proportion)
@@ -164,7 +164,7 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy,res){
                     calculate_absolute_cell_error(ref_obj,
                                                   actual_proportion,
                                                   #permute_within_rows(actual_proportion))) ### this line alternatively permutes the matrix
-                                                  get_random_proportions(ref_obj)))
+                                                  get_random_proportions_probability_simplex(ref_obj)))
   }
 
   #print("Running up to 1000 permutations to compute backgrounds")
@@ -207,6 +207,25 @@ get_random_proportions <- function(ref_obj){
   prob <- exp(m)/rowSums(exp(m))
   return(prob)
 }
+
+get_random_proportions_probability_simplex <- function(ref_obj){
+  set.seed(123)  # For reproducibility
+  n <- length(levels(ref_obj$seurat_clusters))
+  m <- length(unique(ref_obj$orig.ident))
+
+  # Initialize an empty matrix to store the random weights
+  weights_matrix <- matrix(0, nrow = n, ncol = m)
+
+  # Loop over each sample (column) and generate random weights
+  for (j in 1:m) {
+    random_weights <- rgamma(n, shape = 1, rate = 1)
+    weights_matrix[, j] <- random_weights / sum(random_weights)  # Normalize
+  }
+
+  # Print the resulting matrix
+  return(weights_matrix)
+}
+
 
 get_cluster_proportions <- function(ref_obj){
   proportions <- prop.table(table(ref_obj$orig.ident,ref_obj$seurat_clusters),margin=1)
