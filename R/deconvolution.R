@@ -209,7 +209,7 @@ get_random_proportions <- function(ref_obj){
 }
 
 get_random_proportions_probability_simplex <- function(ref_obj){
-  print("Generating random weights using probability simplex")
+  #print("Generating random weights using probability simplex")
   set.seed(123)  # For reproducibility
   n <- length(levels(ref_obj$seurat_clusters))
   m <- length(unique(ref_obj$orig.ident))
