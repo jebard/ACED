@@ -100,6 +100,12 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy,res){
     estimated_proportions <- run_music(ref_obj)
   } else if (strategy=="gedit"){
     estimated_proportions <- run_gedit(ref_obj,query_obj,res)
+  } else if (strategy=="lasso") {
+    estimated_proportions <- aced_lasso(ref_obj)
+  } else if (strategy=="glm"){
+    estimated_proportions <- aced_glm(ref_obj)
+  } else if (strategy=="lasso_spillover"){
+    estimated_proportions <- aced_lasso_spillover(ref_obj)
   } else {
     estimated_proportions <- aced_lasso(ref_obj)
   }
@@ -455,8 +461,6 @@ ACED_BRENT <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
   PlotACED(df)
   return(df)
 }
-
-
 
 
 

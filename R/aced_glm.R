@@ -1,7 +1,7 @@
 
-# This code extracts the coefficients from the LASSO model and normalizes
-# the non-zero coefficients to obtain the proportions. The resulting proportions
-# matrix should represent the estimated proportions of each cell type in the pseudobulk sample.
+# This code implements a linear regression-based deconvolution method using the ACeD pseudoinverse strategy.
+# It simulates pseudobulk single-cell data from a reference object and performs linear regression to estimate
+# the proportions of different cell types in the pseudobulk samples based on the reference data.
 aced_glm <- function(ref_obj){
 print("Defaulting to ACeD pseudoinverse strategy to perform linear regression-based deconvolution")
 # Define the number of pseudobulk samples and reference cell types
@@ -61,7 +61,9 @@ for (i in 1:num_pseudobulk_samples) {
 return(proportions)
 }
 
-
+# This code extracts the coefficients from the LASSO model and normalizes
+# the non-zero coefficients to obtain the proportions. The resulting proportions
+# matrix should represent the estimated proportions of each cell type in the pseudobulk sample.
 aced_lasso <- function(ref_obj){
   print("Defaulting to ACeD Lasso Deconvolution")
   # Define the number of pseudobulk samples and reference cell types
@@ -117,6 +119,9 @@ aced_lasso <- function(ref_obj){
 
 }
 
+# this code is the same as aced_lasso but it uses the cluster information to subset the reference data
+# and perform LASSO regression for each cluster separately. The resulting proportions matrix should represent
+# the estimated proportions of each cell type in the pseudobulk sample, taking into account the cluster information.
 aced_lasso_spillover <- function(ref_obj,cluster=cluster){
   print("Defaulting to ACeD Lasso Deconvolution")
   # Define the number of pseudobulk samples and reference cell types
