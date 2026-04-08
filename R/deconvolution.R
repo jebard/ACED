@@ -227,7 +227,7 @@ get_random_proportions_probability_simplex <- function(ref_obj){
     weights_matrix[, j] <- random_weights / sum(random_weights)  # Normalize
   }
 
-  return(weights_matrix)
+  return(t(weights_matrix))
 }
 
 
@@ -269,7 +269,7 @@ calculate_cluster_tree <- function(ref_obj){
 #' @param method matrix or igraph strategys if using leiden clustering
 #'
 #' @return dataFrame of resulting metrics that ACED generates
-#' @export ACED
+#' @export ACED_GS
 #'
 #' @examples ACED(Seurat.object, start = 0.05,stop=.7,step=0.01,algorithm="louvain",strategy="gedit")
 ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
@@ -391,7 +391,7 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
 #' @param method matrix or igraph strategys if using leiden clustering
 #'
 #' @return dataFrame of resulting metrics that ACED generates
-#' @export ACED
+#' @export ACED_BRENT
 #'
 #' @examples ACED(Seurat.object, start = 0.05,stop=.7,step=0.01,algorithm="louvain",strategy="gedit")
 ACED_BRENT <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,

@@ -38,7 +38,6 @@ execute_gedit <- function(res){
 }
 
 gedit_gather_results <- function(){
-  ### TODO: Need to update this to a path within the ACED package where the output of deconv will go.
   predictions = read.table(file="gedit3_outputs/GEDIT_Deconv_CTPredictions.tsv",header = TRUE, row.names = 1, sep = "\t")
   return(predictions)
 }

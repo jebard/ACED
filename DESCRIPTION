@@ -1,7 +1,7 @@
 Package: ACED
 Type: Package
 Title: Maximizing Accuracy of Cellular Deconvolution (ACED)
-Version: 0.2.0
+Version: 0.3.0
 Author: person("Jonathan E.", "Bard",
   email = "jbard@buffalo.edu",
   role = c("cre", "aut"),
@@ -24,7 +24,11 @@ Imports:
     Seurat,
     ggplot2,
     gtools,
-    reticulate
-Suggests:
+    reticulate,
     MuSiC,
+    SingleCellExperiment,
+    MASS,
+    glmnet,
+    MCMCpack
+Suggests:
     roxygen2
