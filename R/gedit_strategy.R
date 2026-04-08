@@ -4,6 +4,8 @@
 ### python2.7 GEDIT2.py -mix MixtureFullRefOrig.csv  -ref FullRefOrig.csv
 
 run_gedit <- function(ref_obj,query_obj,res){
+  message("Creating a gedit3 output folder")
+  dir.create("gedit3_outputs",showWarnings = F)
   message("Please cite GEDIT3 Nadel et al. https://doi.org/10.1093/gigascience/giab002")
   message("Preparing the reference object for GEDIT3")
   gedit_prep_reference(ref_obj,res)
