@@ -29,6 +29,7 @@ Imports:
     SingleCellExperiment,
     MASS,
     glmnet,
-    MCMCpack
+    MCMCpack,
+    stats
 Suggests:
     roxygen2
