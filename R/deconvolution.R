@@ -17,7 +17,7 @@
 #'
 #' @examples ACED(Seurat.object, start = 0.05,stop=.7,step=0.01,algorithm="louvain",strategy="gedit")
 ACED <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
-                  step=.05,algorithm="louvain",method="matrix"){
+                 step=.05,algorithm="louvain",method="matrix"){
 
   #### instantiate lists to return
   query_obj <- ref_obj
@@ -30,13 +30,13 @@ ACED <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
   #### for each of the resolutions we are going to be testing
   for (res in c(seq(from=start,to=stop,by=step))){
     #resolution_string <- paste0("integrated_snn_res.",res)
-      message(paste0("Calulating resolution ",res," for reference. Clustering using the ",algorithm," clustering"))
+    message(paste0("Calulating resolution ",res," for reference. Clustering using the ",algorithm," clustering"))
 
-        if(algorithm=="leiden" || algorithm == 4){
-        ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=algorithm,verbose=T,method=method)
-      } else {
+    if(algorithm=="leiden" || algorithm == 4){
+      ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=algorithm,verbose=T,method=method)
+    } else {
       ref_obj <- FindClusters(ref_obj,resolution = res,algorithm=algorithm,verbose=T)
-      }
+    }
     #}
     gedit_results <- evaluate_deconvolution(ref_obj,query_obj,strategy,res)
 
@@ -156,15 +156,17 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy,res){
   ACE <- calculate_absolute_cell_error(ref_obj,actual_proportion,estimated_proportions)
   PC <- calculate_proportinal_correlation(ref_obj,actual_proportion,estimated_proportions)
 
-  message("Bootstrapping a random background 500 times")
+  message("Computing deterministic background estimate via probability simplex")
   ACE_Boot <- c()
 
+  set.seed(123)  # Set once here so each call to get_random_proportions_probability_simplex
+  # advances the RNG independently, producing distinct simplex draws.
   for (boot in seq(1,500)){
-  ACE_Boot <- rbind(ACE_Boot,
-                    calculate_absolute_cell_error(ref_obj,
-                                                  actual_proportion,
-                                                  #permute_within_rows(actual_proportion))) ### this line alternatively permutes the matrix
-                                                  get_random_proportions_probability_simplex(ref_obj)))
+    ACE_Boot <- rbind(ACE_Boot,
+                      calculate_absolute_cell_error(ref_obj,
+                                                    actual_proportion,
+                                                    #permute_within_rows(actual_proportion))) ### this line alternatively permutes the matrix
+                                                    get_random_proportions_probability_simplex(ref_obj)))
   }
 
   #print("Running up to 1000 permutations to compute backgrounds")
@@ -209,8 +211,10 @@ get_random_proportions <- function(ref_obj){
 }
 
 get_random_proportions_probability_simplex <- function(ref_obj){
-  #print("Generating random weights using probability simplex")
-  set.seed(123)  # For reproducibility
+  # Generates a single random proportion vector sampled uniformly from the
+  # K-dimensional probability simplex via the Dirichlet construction.
+  # NOTE: set.seed() must be called by the caller before any loop that uses
+  # this function to ensure reproducible but distinct draws across iterations.
   n <- length(levels(ref_obj$seurat_clusters))
   m <- length(unique(ref_obj$orig.ident))
 
@@ -223,7 +227,6 @@ get_random_proportions_probability_simplex <- function(ref_obj){
     weights_matrix[, j] <- random_weights / sum(random_weights)  # Normalize
   }
 
-  # Print the resulting matrix
   return(weights_matrix)
 }
 
@@ -242,7 +245,7 @@ clear_resolutions <- function(ref_obj){
     resolution_string <- paste0("integrated_snn_res.",res)
     tryCatch(
       expr ={
-      ref_obj[[resolution_string]] <- NULL
+        ref_obj[[resolution_string]] <- NULL
       }, error = function(e){
       })
   }
@@ -270,7 +273,7 @@ calculate_cluster_tree <- function(ref_obj){
 #'
 #' @examples ACED(Seurat.object, start = 0.05,stop=.7,step=0.01,algorithm="louvain",strategy="gedit")
 ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
-                 step=.05,algorithm="louvain",method="matrix"){
+                    step=.05,algorithm="louvain",method="matrix"){
   #### instantiate lists to return
   query_obj <- ref_obj
   values_mae = c();values_rse = c();values_smape = c();values_rmse = c()
@@ -279,92 +282,75 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
   values_ACE = c();values_ACE_random = c();values_MAE_random = c();values_PC = c();
   values_background_stdev = c(); values_background_mean = c();
 
+  # Cache: named list mapping resolution (as character) -> evaluate_deconvolution() result vector
+  result_cache <- list()
+
   ## golden search
   golden_ratio <- (sqrt(5) + 1) / 2
   tolerance <- step  # Convergence criterion
   lower_bound <- start
   upper_bound <- stop
 
-  # Initial points
-  c <- start #upper_bound - (upper_bound - lower_bound) / golden_ratio
-  d <- stop #lower_bound + (upper_bound - lower_bound) / golden_ratio
+  # Helper: evaluate a resolution, using cache if already computed
+  evaluate_resolution <- function(res_val) {
+    key <- as.character(res_val)
+    if (!is.null(result_cache[[key]])) {
+      message(paste0("Cache hit for resolution ", res_val, " - skipping re-evaluation"))
+      return(result_cache[[key]])
+    }
+    if (algorithm=="leiden" || algorithm == 4) {
+      ref_obj <<- FindClusters(ref_obj, resolution=res_val, algorithm=algorithm, verbose=T, method=method)
+    } else {
+      ref_obj <<- FindClusters(ref_obj, resolution=res_val, algorithm=algorithm, verbose=T)
+    }
+    result <- evaluate_deconvolution(ref_obj, query_obj, strategy, res_val)
+    result_cache[[key]] <<- result
+
+    clusters            <<- c(clusters, length(levels(ref_obj$seurat_clusters)))
+    values_mae          <<- c(values_mae, result[1])
+    values_rse          <<- c(values_rse, result[2])
+    values_smape        <<- c(values_smape, result[3])
+    values_rmse         <<- c(values_rmse, result[4])
+    values_actual_zero  <<- c(values_actual_zero, result[5])
+    values_predicted_zero <<- c(values_predicted_zero, result[6])
+    values_ae           <<- c(values_ae, result[7])
+    values_ae_cc        <<- c(values_ae_cc, result[8])
+    values_lm_res       <<- c(values_lm_res, result[9])
+    values_ACE          <<- c(values_ACE, result[10])
+    values_ACE_random   <<- c(values_ACE_random, result[11])
+    values_MAE_random   <<- c(values_MAE_random, result[12])
+    values_PC           <<- c(values_PC, result[13])
+    values_background_mean  <<- c(values_background_mean, result[14])
+    values_background_stdev <<- c(values_background_stdev, result[15])
+    resolution          <<- c(resolution, res_val)
+
+    ## generate on the fly plots
+    plot(values_ACE_random~resolution, col="red",
+         ylim=c(0, max(values_ACE_random + (values_ACE_random * .5))))
+    arrows(x0=resolution, y0=values_background_mean-values_background_stdev,
+           x1=resolution, y1=values_background_mean+values_background_stdev,
+           code=3, angle=90, length=0.05, col="red", lty=2)
+    points(values_ACE_random-values_ACE~resolution, col="darkgreen")
+    points(values_ACE~resolution, col="blue")
+
+    return(result)
+  }
+
+  # Initial points start at the search boundaries
+  c <- start
+  d <- stop
 
   # Iterative Golden Section Search
   while (abs(upper_bound - lower_bound) > tolerance) {
     print(paste0("C: ",c))
     print(paste0("D: ",d))
 
-    ### process C
-    if(!c %in% resolution){ ## if c is already calcualted, don't do it again.
-    if(algorithm=="leiden" || algorithm == 4){
-      ref_obj <- FindClusters(ref_obj,resolution = c,algorithm=algorithm,verbose=T,method=method)
-    } else {
-      ref_obj <- FindClusters(ref_obj,resolution = c,algorithm=algorithm,verbose=T)
-    }
-    gedit_results_c <- evaluate_deconvolution(ref_obj,query_obj,strategy,c)
-    clusters = c(clusters,length(levels(ref_obj$seurat_clusters)))
-    values_mae = c(values_mae,gedit_results_c[1])
-    values_rse = c(values_rse,gedit_results_c[2])
-    values_smape = c(values_smape,gedit_results_c[3])
-    values_rmse = c(values_rmse,gedit_results_c[4])
-    values_actual_zero = c(values_actual_zero,gedit_results_c[5])
-    values_predicted_zero = c(values_predicted_zero,gedit_results_c[6])
-    values_ae = c(values_ae,gedit_results_c[7])
-    values_ae_cc = c(values_ae_cc,gedit_results_c[8])
-    values_lm_res = c(values_lm_res,gedit_results_c[9])
-    values_ACE = c(values_ACE,gedit_results_c[10])
-    values_ACE_random = c(values_ACE_random,gedit_results_c[11])
-    values_MAE_random = c(values_MAE_random,gedit_results_c[12])
-    values_PC = c(values_PC,gedit_results_c[13])
-    values_background_mean = c(values_background_mean,gedit_results_c[14])
-    values_background_stdev = c(values_background_stdev,gedit_results_c[15])
-    resolution = c(resolution,c)
-    ## generate some on the fly plots
-    plot(values_ACE_random~resolution,col="red",ylim=c(0,max(values_ACE_random + (values_ACE_random * .5))))
-    arrows(x0=resolution, y0=values_background_mean-values_background_stdev,
-           x1=resolution, y1=values_background_mean+values_background_stdev,
-           code=3, angle=90, length=0.05,col="red",lty=2)
-    points(values_ACE_random-values_ACE~resolution,col="darkgreen")
-    points(values_ACE~resolution,col="blue")
-    }
+    gedit_results_c <- evaluate_resolution(c)
+    gedit_results_d <- evaluate_resolution(d)
 
-    if(!d %in% resolution){ ## if d is already calcualted, don't do it again.
-    ### process D
-    if(algorithm=="leiden" || algorithm == 4){
-      ref_obj <- FindClusters(ref_obj,resolution = d,algorithm=algorithm,verbose=T,method=method)
-    } else {
-      ref_obj <- FindClusters(ref_obj,resolution = d,algorithm=algorithm,verbose=T)
-    }
-    gedit_results_d <- evaluate_deconvolution(ref_obj,query_obj,strategy,d)
-    clusters = c(clusters,length(levels(ref_obj$seurat_clusters)))
-    ## update all the returns
-    values_mae = c(values_mae,gedit_results_d[1])
-    values_rse = c(values_rse,gedit_results_d[2])
-    values_smape = c(values_smape,gedit_results_d[3])
-    values_rmse = c(values_rmse,gedit_results_d[4])
-    values_actual_zero = c(values_actual_zero,gedit_results_d[5])
-    values_predicted_zero = c(values_predicted_zero,gedit_results_d[6])
-    values_ae = c(values_ae,gedit_results_d[7])
-    values_ae_cc = c(values_ae_cc,gedit_results_d[8])
-    values_lm_res = c(values_lm_res,gedit_results_d[9])
-    values_ACE = c(values_ACE,gedit_results_d[10])
-    values_ACE_random = c(values_ACE_random,gedit_results_d[11])
-    values_MAE_random = c(values_MAE_random,gedit_results_d[12])
-    values_PC = c(values_PC,gedit_results_d[13])
-    values_background_mean = c(values_background_mean,gedit_results_d[14])
-    values_background_stdev = c(values_background_stdev,gedit_results_d[15])
-    resolution = c(resolution,d)
-    ## generate some on the fly plots
-    plot(values_ACE_random~resolution,col="red",ylim=c(0,max(values_ACE_random + (values_ACE_random * .5))))
-    arrows(x0=resolution, y0=values_background_mean-values_background_stdev,
-           x1=resolution, y1=values_background_mean+values_background_stdev,
-           code=3, angle=90, length=0.05,col="red",lty=2)
-    points(values_ACE_random-values_ACE~resolution,col="darkgreen")
-    points(values_ACE~resolution,col="blue")
-    }
-    ### finalize the "score" for this resolution
-    c_score <- gedit_results_c[11] -  gedit_results_c[10]
-    d_score <- gedit_results_d[11] -  gedit_results_d[10]
+    ### finalize the "score" for this resolution using cached results
+    c_score <- gedit_results_c[11] - gedit_results_c[10]
+    d_score <- gedit_results_d[11] - gedit_results_d[10]
 
     if (c_score > d_score) {
       upper_bound <- d
@@ -373,8 +359,8 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
     }
 
     # Update points
-    c <- round(upper_bound - (upper_bound - lower_bound) / golden_ratio,4)
-    d <- round(lower_bound + (upper_bound - lower_bound) / golden_ratio,4)
+    c <- round(upper_bound - (upper_bound - lower_bound) / golden_ratio, 4)
+    d <- round(lower_bound + (upper_bound - lower_bound) / golden_ratio, 4)
   }
 
   # Optimal resolution
@@ -409,7 +395,7 @@ ACED_GS <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
 #'
 #' @examples ACED(Seurat.object, start = 0.05,stop=.7,step=0.01,algorithm="louvain",strategy="gedit")
 ACED_BRENT <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
-                    step=.05,algorithm="louvain",method="matrix"){
+                       step=.05,algorithm="louvain",method="matrix"){
   #### instantiate lists to return
   query_obj <- ref_obj
   values_mae = c();values_rse = c();values_smape = c();values_rmse = c()
@@ -421,38 +407,38 @@ ACED_BRENT <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
   clustering_objective <- function(c){
     print(paste0("Evaluating resolution: ", c))
     ### process C
-      if(algorithm=="leiden" || algorithm == 4){
-        ref_obj <- FindClusters(ref_obj,resolution = c,algorithm=algorithm,verbose=T,method=method)
-      } else {
-        ref_obj <- FindClusters(ref_obj,resolution = c,algorithm=algorithm,verbose=T)
-      }
-      gedit_results_c <<- evaluate_deconvolution(ref_obj,query_obj,strategy,c)
-      clusters <<- c(clusters,length(levels(ref_obj$seurat_clusters)))
-      values_mae <<- c(values_mae,gedit_results_c[1])
-      values_rse <<- c(values_rse,gedit_results_c[2])
-      values_smape <<- c(values_smape,gedit_results_c[3])
-      values_rmse <<- c(values_rmse,gedit_results_c[4])
-      values_actual_zero <<- c(values_actual_zero,gedit_results_c[5])
-      values_predicted_zero <<- c(values_predicted_zero,gedit_results_c[6])
-      values_ae <<- c(values_ae,gedit_results_c[7])
-      values_ae_cc <<- c(values_ae_cc,gedit_results_c[8])
-      values_lm_res <<- c(values_lm_res,gedit_results_c[9])
-      values_ACE <<- c(values_ACE,gedit_results_c[10])
-      values_ACE_random <<- c(values_ACE_random,gedit_results_c[11])
-      values_MAE_random <<- c(values_MAE_random,gedit_results_c[12])
-      values_PC <<- c(values_PC,gedit_results_c[13])
-      values_background_mean <<- c(values_background_mean,gedit_results_c[14])
-      values_background_stdev <<- c(values_background_stdev,gedit_results_c[15])
-      resolution <<- c(resolution,c)
-      ## generate some on the fly plots
-      plot(values_ACE_random~resolution,col="red",ylim=c(0,max(values_ACE_random + (values_ACE_random * .5))))
-      arrows(x0=resolution, y0=values_background_mean-values_background_stdev,
-             x1=resolution, y1=values_background_mean+values_background_stdev,
-             code=3, angle=90, length=0.05,col="red",lty=2)
-      points(values_ACE_random-values_ACE~resolution,col="darkgreen")
-      points(values_ACE~resolution,col="blue")
-      return(gedit_results_c[11] - gedit_results_c[10])
+    if(algorithm=="leiden" || algorithm == 4){
+      ref_obj <- FindClusters(ref_obj,resolution = c,algorithm=algorithm,verbose=T,method=method)
+    } else {
+      ref_obj <- FindClusters(ref_obj,resolution = c,algorithm=algorithm,verbose=T)
     }
+    gedit_results_c <<- evaluate_deconvolution(ref_obj,query_obj,strategy,c)
+    clusters <<- c(clusters,length(levels(ref_obj$seurat_clusters)))
+    values_mae <<- c(values_mae,gedit_results_c[1])
+    values_rse <<- c(values_rse,gedit_results_c[2])
+    values_smape <<- c(values_smape,gedit_results_c[3])
+    values_rmse <<- c(values_rmse,gedit_results_c[4])
+    values_actual_zero <<- c(values_actual_zero,gedit_results_c[5])
+    values_predicted_zero <<- c(values_predicted_zero,gedit_results_c[6])
+    values_ae <<- c(values_ae,gedit_results_c[7])
+    values_ae_cc <<- c(values_ae_cc,gedit_results_c[8])
+    values_lm_res <<- c(values_lm_res,gedit_results_c[9])
+    values_ACE <<- c(values_ACE,gedit_results_c[10])
+    values_ACE_random <<- c(values_ACE_random,gedit_results_c[11])
+    values_MAE_random <<- c(values_MAE_random,gedit_results_c[12])
+    values_PC <<- c(values_PC,gedit_results_c[13])
+    values_background_mean <<- c(values_background_mean,gedit_results_c[14])
+    values_background_stdev <<- c(values_background_stdev,gedit_results_c[15])
+    resolution <<- c(resolution,c)
+    ## generate some on the fly plots
+    plot(values_ACE_random~resolution,col="red",ylim=c(0,max(values_ACE_random + (values_ACE_random * .5))))
+    arrows(x0=resolution, y0=values_background_mean-values_background_stdev,
+           x1=resolution, y1=values_background_mean+values_background_stdev,
+           code=3, angle=90, length=0.05,col="red",lty=2)
+    points(values_ACE_random-values_ACE~resolution,col="darkgreen")
+    points(values_ACE~resolution,col="blue")
+    return(gedit_results_c[11] - gedit_results_c[10])
+  }
 
   interval <- c(start, stop)
   optimize(clustering_objective, interval = interval, maximum = T,tol=step)

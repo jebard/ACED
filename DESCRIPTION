@@ -1,14 +1,30 @@
 Package: ACED
 Type: Package
-Title: Maximizing accuracy of cellular deconvolution. (ACED)
-Version: 0.1.0
+Title: Maximizing Accuracy of Cellular Deconvolution (ACED)
+Version: 0.2.0
 Author: person("Jonathan E.", "Bard",
-  email = jbard@buffalo.edu,
+  email = "jbard@buffalo.edu",
   role = c("cre", "aut"),
   comment = c(ORCID = "0000-0001-7433-0086"))
 Maintainer: Jonathan Bard <jbard@buffalo.edu>
-Description: Maximizing accuracy of cellular deconvolution. (ACED)
-License: MIT
+Description: ACED (Accurate Cellular Deconvolution) identifies the optimal
+    clustering resolution of a single-cell RNA-seq reference dataset for the
+    purpose of maximizing bulk RNA-seq deconvolution performance. It evaluates
+    each resolution using the Approximate Cell Error (ACE) metric and supports
+    full grid search (ACED), golden-section search (ACED_GS), and Brent's
+    method (ACED_BRENT) optimization strategies.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Depends: Biobase, Metrics, MuSiC, Seurat, ggplot2, gtools, reticulate
+Depends:
+    R (>= 4.0.0)
+Imports:
+    Biobase,
+    Metrics,
+    Seurat,
+    ggplot2,
+    gtools,
+    reticulate
+Suggests:
+    MuSiC,
+    roxygen2

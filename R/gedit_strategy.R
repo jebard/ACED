@@ -1,5 +1,3 @@
-library(Seurat)
-
 ### gedit Template Strategy Pattern
 ### GEDIT is a python based tool that solves deconvolution using  ...
 ###

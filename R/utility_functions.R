@@ -97,17 +97,21 @@ validate_bulk_gedit <- function(bulk_tsv=NULL,refObj=NULL,start=0.1,stop=1,step=
     a <- as.vector(a.mat * cells_per_sample) # multiply the actual proportion table against the total cells to get cells-per-cluster
     b <- as.vector(b.mat * cells_per_sample) # multiply the estimated proportion table against the total cells to get cells-per-cluster
 
-    print("Bootstrapping the background")
+    print("Computing background using probability simplex (consistent with ACED() workflow)")
     ACE_Boot <- c()
+    set.seed(123)  # Set once before the bootstrap loop for reproducibility
     for (boot in seq(1,500)){
-    samples <- nrow(actual)
-    # next get the number of clusters in the object
-    clusts <- ncol(actual)
-    m <- matrix(rnorm(samples * clusts,mean(actual),sd = 1), nrow=samples)
-    #m <- matrix(rnorm(samples * clusts,mean(actual_proportion),sd = sd(actual_proportion)), nrow=samples)
-    prob <- exp(m)/rowSums(exp(m))
-    back <- as.vector(prob * cells_per_sample) ## background error rate
-    ACE_Boot <- rbind(ACE_Boot,sum(abs(a-back)))
+      # Build a simplex-sampled background matrix matching the shape of actual
+      samples <- nrow(actual)
+      clusts  <- ncol(actual)
+      weights_matrix <- matrix(0, nrow = clusts, ncol = samples)
+      for (j in 1:samples) {
+        random_weights <- rgamma(clusts, shape = 1, rate = 1)
+        weights_matrix[, j] <- random_weights / sum(random_weights)
+      }
+      prob <- t(weights_matrix)  # samples x clusters to match actual orientation
+      back <- as.vector(prob * cells_per_sample) ## background error rate
+      ACE_Boot <- rbind(ACE_Boot,sum(abs(a-back)))
     }
 
     values_ACE = c(values_ACE,sum(abs(a-b)))
