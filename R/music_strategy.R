@@ -55,11 +55,50 @@ music_prep_reference_old <- function(music.input=NULL){
 }
 
 music_prep_query <- function(ref_obj=NULL){
-  Idents(ref_obj) <- "orig.ident"
-  scrna.exp <- AverageExpression(ref_obj,assays = "RNA",slot = "counts")
-  # row names identify features and column names identify samples.
-  scrna.exp <- scrna.exp$RNA
-  pseudobulk.eset = ExpressionSet(assayData = scrna.exp)
-  #return(scrna.exp)
+  # Detect Seurat version for slot/layer compatibility
+  ver <- tryCatch(utils::packageVersion("Seurat"), error = function(e) "4.0.0")
+
+  n_samples <- length(unique(ref_obj$orig.ident))
+
+  if (n_samples == 1) {
+    # Single-sample: Seurat v5 ignores group.by when all cells share one identity
+    # and returns a matrix with an unpredictable column name. Bypass AverageExpression
+    # entirely and compute rowMeans directly from the count matrix.
+    message("music_prep_query: single-sample object detected -- ",
+            "computing average expression directly from count matrix.")
+    sample_name <- as.character(unique(ref_obj$orig.ident))
+    if (ver >= "5.0.0") {
+      counts <- as.matrix(Seurat::GetAssayData(ref_obj, assay = "RNA", layer = "counts"))
+    } else {
+      counts <- as.matrix(Seurat::GetAssayData(ref_obj, assay = "RNA", slot  = "counts"))
+    }
+    # Build G x 1 matrix with the correct sample name as column
+    scrna.mat <- matrix(rowMeans(counts, na.rm = TRUE), ncol = 1,
+                        dimnames = list(rownames(counts), sample_name))
+  } else {
+    # Multi-sample: use AverageExpression with correct slot/layer for Seurat version.
+    # group.by="orig.ident" is used explicitly (not Idents) to avoid any active-ident
+    # conflicts with single-sample objects.
+    if (ver >= "5.0.0") {
+      scrna.exp <- Seurat::AverageExpression(ref_obj, assays = "RNA",
+                                             layer = "counts",
+                                             group.by = "orig.ident")
+    } else {
+      scrna.exp <- Seurat::AverageExpression(ref_obj, assays = "RNA",
+                                             slot = "counts",
+                                             group.by = "orig.ident")
+    }
+    # Coerce to plain dense matrix -- Seurat v5 may return a sparse dgeMatrix
+    # which Biobase::ExpressionSet() cannot accept (requires plain numeric matrix).
+    scrna.mat <- as.matrix(scrna.exp$RNA)  # G x M
+  }
+
+  # Guard: replace any NA values before passing to ExpressionSet
+  if (any(is.na(scrna.mat))) {
+    scrna.mat[is.na(scrna.mat)] <- 0
+    message("music_prep_query: NA values in query matrix replaced with 0.")
+  }
+
+  pseudobulk.eset <- Biobase::ExpressionSet(assayData = scrna.mat)
   return(pseudobulk.eset)
 }
