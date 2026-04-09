@@ -1,13 +1,15 @@
 # ACeD Internal Deconvolution Strategies
-# Provides three lightweight deconvolution methods that operate entirely within R,
+# Provides two lightweight deconvolution methods that operate entirely within R,
 # requiring no external Python tools. These complement the primary GEDIT3 and MuSiC
 # strategies and are integrated into the ACED() / ACED_GS() / ACED_BRENT() workflows
-# by passing strategy="glm" or strategy="lasso".
+# by passing strategy="glm" (NNLS) or strategy="lasso" (LASSO).
 #
-# aced_lasso_spillover() is a standalone diagnostic tool — it cannot be used as a
-# strategy= argument because it requires a cluster name, which the resolution loop
-# cannot supply. Call it directly after running ACED() to inspect inter-cluster
-# spillover at the optimal resolution.
+# aced_lasso_spillover() is a standalone post-hoc diagnostic — call it directly
+# after an ACED run; it cannot be used as a strategy= argument.
+#
+# Dependencies:
+#   strategy="glm"   -> install.packages("nnls")
+#   strategy="lasso" -> install.packages("glmnet")  [usually already installed]
 #
 # @author jbard
 
@@ -107,33 +109,72 @@ safe_normalize <- function(x) {
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# aced_glm — pseudoinverse (Moore-Penrose) deconvolution
+# aced_glm — Non-negative least squares (NNLS) deconvolution
 # ─────────────────────────────────────────────────────────────────────────────
+#
+# WHY NOT PSEUDOINVERSE?
+# The Moore-Penrose pseudoinverse (ginv) fails on real scRNA-seq data because:
+#
+#   1. Raw count data is unscaled: AverageExpression returns mean counts per
+#      gene per cluster. Clusters with more total RNA (higher total counts)
+#      dominate the pseudoinverse solution regardless of composition, because
+#      the minimum-norm solution assigns all weight to the direction of maximum
+#      variance — which is total expression level, not cell-type identity.
+#
+#   2. High collinearity: with ~20,000 genes and only K=3-20 clusters, the
+#      reference matrix is G >> K overdetermined. Thousands of housekeeping
+#      genes are shared across all clusters and produce near-identical columns.
+#      The resulting large condition number means tiny numerical differences
+#      between cluster signatures produce huge swings in the unconstrained
+#      coefficient vector, collapsing to a single dominant cluster.
+#
+# THE FIX — Non-negative least squares (NNLS):
+#   NNLS solves:  min ||Reference %*% beta - bulk||^2  subject to beta >= 0
+#
+#   The non-negativity constraint regularises the solution: it cannot use
+#   large negative and positive cancelling terms to achieve minimum norm,
+#   so collinear columns cannot destabilise the result. NNLS is the algorithm
+#   underlying CIBERSORT, TIMER, and most standard deconvolution tools.
+#
+#   We additionally L2-normalise each reference column before fitting (divide
+#   by its Euclidean norm) so that no cluster dominates simply by having higher
+#   total counts. Coefficients are rescaled back after fitting to be
+#   interpretable on the original proportion scale, then sum-normalised to 1.
 
-#' ACeD pseudoinverse (GLM) deconvolution
+#' ACeD NNLS deconvolution
 #'
-#' Solves the deconvolution system:
-#'   beta = pinv(Reference) %*% bulk_sample
-#' where Reference is G x K and bulk_sample is G x 1.
-#' All K clusters are estimated jointly in one operation, so inter-cluster
-#' correlations are accounted for correctly. The pseudoinverse is computed
-#' once and reused across all samples.
+#' Deconvolves each pseudobulk sample against the reference using non-negative
+#' least squares (NNLS). Reference columns are L2-normalised before fitting to
+#' remove the effect of differences in total counts between clusters.
+#' This is the same statistical framework used by CIBERSORT and TIMER.
+#'
+#' Requires the 'nnls' package (install.packages("nnls")).
 #'
 #' @param ref_obj Preprocessed Seurat object with seurat_clusters and orig.ident.
 #' @return Data frame (samples x clusters) of estimated cell-type proportions.
 #' @export
 aced_glm <- function(ref_obj) {
-  message("ACeD: running pseudoinverse (GLM) deconvolution")
+  message("ACeD: running NNLS deconvolution")
+
+  if (!requireNamespace("nnls", quietly = TRUE)) {
+    stop("Package 'nnls' is required for strategy='glm'. ",
+         "Install it with: install.packages('nnls')")
+  }
 
   mats     <- build_pseudobulk_matrices(ref_obj)
   query    <- mats$query      # M x G
   ref_mat  <- mats$reference  # G x K
 
-  num_samples  <- nrow(query)   # M
-  num_clusters <- ncol(ref_mat) # K
+  num_samples  <- nrow(query)
+  num_clusters <- ncol(ref_mat)
 
-  # Compute Moore-Penrose pseudoinverse once: pinv(G x K) → K x G
-  ref_pinv <- MASS::ginv(ref_mat)  # K x G
+  # L2-normalise each reference column (cluster signature) so that
+  # no cluster dominates the NNLS fit due to higher total count magnitude.
+  # We store the norms and divide back out after fitting so that coefficients
+  # retain their proportion interpretation before sum-normalisation.
+  col_norms <- sqrt(colSums(ref_mat^2))
+  col_norms[col_norms == 0] <- 1  # guard against all-zero columns
+  ref_normalised <- sweep(ref_mat, 2, col_norms, FUN = "/")  # G x K, unit columns
 
   proportions <- matrix(
     0, nrow = num_samples, ncol = num_clusters,
@@ -141,8 +182,15 @@ aced_glm <- function(ref_obj) {
   )
 
   for (i in seq_len(num_samples)) {
-    bulk <- query[i, ]                         # G x 1
-    beta <- as.vector(ref_pinv %*% bulk)       # K x 1 — joint solution
+    bulk <- query[i, ]  # G x 1
+
+    # Also L2-normalise the bulk sample for numerical comparability
+    bulk_norm <- bulk / max(sqrt(sum(bulk^2)), 1e-10)
+
+    # NNLS: min ||ref_normalised %*% beta - bulk_norm||^2, beta >= 0
+    result <- nnls::nnls(A = ref_normalised, b = bulk_norm)
+    beta   <- result$x  # K x 1, non-negative
+
     proportions[i, ] <- safe_normalize(beta)
   }
 
@@ -235,7 +283,7 @@ aced_lasso <- function(ref_obj) {
 #' @export
 aced_lasso_spillover <- function(ref_obj, cluster = NULL) {
 
-  # ---- Input validation ----
+  # —— Input validation ——
   if (is.null(cluster)) {
     stop("'cluster' is required. Provide one or more cluster names.\n",
          "Valid clusters: ", paste(levels(ref_obj$seurat_clusters), collapse = ", "))
@@ -249,7 +297,7 @@ aced_lasso_spillover <- function(ref_obj, cluster = NULL) {
   message("ACeD spillover: building pseudo-bulk from cluster(s): ",
           paste(cluster, collapse = ", "))
 
-  # ---- Query: aggregate raw counts for target cluster(s) ----
+  # —— Query: aggregate raw counts for target cluster(s) ——
   # AggregateExpression returns G x K matrix of summed counts
   agg_mat <- .seurat_agg_expr(ref_obj, group.by = "seurat_clusters")  # G x K
 
@@ -260,10 +308,10 @@ aced_lasso_spillover <- function(ref_obj, cluster = NULL) {
     pseudo_bulk <- rowSums(agg_mat[, cluster])   # sum across target clusters → G
   }
 
-  # ---- Reference: average expression per cluster ----
+  # —— Reference: average expression per cluster ——
   ref_mat <- .seurat_avg_expr(ref_obj, group.by = "seurat_clusters")  # G x K
 
-  # ---- Align genes ----
+  # —— Align genes ——
   shared_genes <- intersect(names(pseudo_bulk), rownames(ref_mat))
   if (length(shared_genes) == 0) {
     stop("No shared genes between pseudo-bulk query and reference matrix.")
@@ -274,7 +322,7 @@ aced_lasso_spillover <- function(ref_obj, cluster = NULL) {
   message("ACeD spillover: fitting LASSO — ", ncol(ref_mat), " clusters, ",
           length(shared_genes), " genes")
 
-  # ---- LASSO ----
+  # —— LASSO ——
   lasso_model <- glmnet::cv.glmnet(
     x            = ref_mat,
     y            = pseudo_bulk,
@@ -288,7 +336,7 @@ aced_lasso_spillover <- function(ref_obj, cluster = NULL) {
   result <- safe_normalize(coefs)
   names(result) <- colnames(ref_mat)
 
-  # ---- Report ----
+  # —— Report ——
   message("ACeD spillover: results (>1%):")
   for (nm in names(sort(result, decreasing = TRUE))) {
     if (result[nm] > 0.01) {
