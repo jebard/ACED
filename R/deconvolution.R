@@ -104,8 +104,6 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy,res){
     estimated_proportions <- aced_lasso(ref_obj)
   } else if (strategy=="glm"){
     estimated_proportions <- aced_glm(ref_obj)
-  } else if (strategy=="lasso_spillover"){
-    estimated_proportions <- aced_lasso_spillover(ref_obj)
   } else {
     estimated_proportions <- aced_lasso(ref_obj)
   }
