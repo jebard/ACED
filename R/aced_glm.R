@@ -55,8 +55,13 @@
 #' Build pseudobulk matrices from a Seurat object (Seurat v4/v5 compatible)
 #'
 #' Returns a list:
-#'   $query     : M samples x G genes  (AverageExpression by orig.ident, transposed)
+#'   $query     : M samples x G genes  (average expression per sample)
 #'   $reference : G genes x K clusters (AverageExpression by seurat_clusters)
+#'
+#' Single-sample objects (one unique orig.ident) are handled specially:
+#' Seurat v5 ignores the group.by variable when all cells share one identity,
+#' returning a matrix with a wrong or missing column name. We bypass this by
+#' computing rowMeans directly from the count matrix via GetAssayData.
 #'
 #' @param ref_obj Preprocessed Seurat object with seurat_clusters and orig.ident.
 #' @return Named list with $query (M x G) and $reference (G x K).
@@ -66,23 +71,59 @@ build_pseudobulk_matrices <- function(ref_obj) {
   # Reference: G x K — average expression per cluster
   ref_mat <- .seurat_avg_expr(ref_obj, group.by = "seurat_clusters")  # G x K
 
-  # Query: G x M from AverageExpression, transposed to M x G
-  query_mat <- t(.seurat_avg_expr(ref_obj, group.by = "orig.ident"))   # M x G
+  # Query: M x G — average expression per sample
+  # Special case: when all cells have the same orig.ident (single-sample object),
+  # Seurat v5 ignores the group.by variable and computes across all cells,
+  # returning a column with an unpredictable name that will not match the
+  # orig.ident value expected downstream. We detect this and compute directly.
+  n_samples   <- length(unique(ref_obj$orig.ident))
+  sample_name <- as.character(unique(ref_obj$orig.ident))
+
+  if (n_samples == 1) {
+    message("build_pseudobulk_matrices: single-sample object detected (",
+            sample_name, ") — computing average expression directly.")
+    ver <- tryCatch(utils::packageVersion("Seurat"), error = function(e) "4.0.0")
+    if (ver >= "5.0.0") {
+      counts <- as.matrix(Seurat::GetAssayData(ref_obj, assay = "RNA", layer = "counts"))
+    } else {
+      counts <- as.matrix(Seurat::GetAssayData(ref_obj, assay = "RNA", slot  = "counts"))
+    }
+    gene_means <- rowMeans(counts, na.rm = TRUE)
+    # Build 1 x G matrix with the correct sample name as rowname
+    query_mat <- matrix(gene_means, nrow = 1,
+                        dimnames = list(sample_name, names(gene_means)))
+  } else {
+    # Multi-sample: AverageExpression by orig.ident, G x M -> transpose to M x G
+    query_mat <- t(.seurat_avg_expr(ref_obj, group.by = "orig.ident"))
+  }
 
   # Align genes (columns of query, rows of reference)
   shared_genes <- intersect(colnames(query_mat), rownames(ref_mat))
   if (length(shared_genes) == 0) {
     stop("build_pseudobulk_matrices: no shared genes between query and reference. ",
-         "Check that the Seurat object has been processed correctly.")
+         "Check that the Seurat object has counts in the RNA assay.")
   }
   if (length(shared_genes) < nrow(ref_mat)) {
     message("build_pseudobulk_matrices: using ", length(shared_genes),
-            " of ", nrow(ref_mat), " genes present in both matrices.")
+            " of ", nrow(ref_mat), " genes shared between query and reference.")
+  }
+
+  # Final sanity check: no NA values in either matrix
+  ref_sub   <- ref_mat[shared_genes,   , drop = FALSE]
+  query_sub <- query_mat[, shared_genes, drop = FALSE]
+
+  if (any(is.na(ref_sub))) {
+    ref_sub[is.na(ref_sub)] <- 0
+    message("build_pseudobulk_matrices: NA values found in reference matrix — replaced with 0.")
+  }
+  if (any(is.na(query_sub))) {
+    query_sub[is.na(query_sub)] <- 0
+    message("build_pseudobulk_matrices: NA values found in query matrix — replaced with 0.")
   }
 
   list(
-    query     = query_mat[, shared_genes, drop = FALSE],   # M x G
-    reference = ref_mat[shared_genes,   , drop = FALSE]    # G x K
+    query     = query_sub,   # M x G
+    reference = ref_sub      # G x K
   )
 }
 
@@ -184,11 +225,22 @@ aced_glm <- function(ref_obj) {
   for (i in seq_len(num_samples)) {
     bulk <- query[i, ]  # G x 1
 
-    # Also L2-normalise the bulk sample for numerical comparability
-    bulk_norm <- bulk / max(sqrt(sum(bulk^2)), 1e-10)
+    # Guard: if any gene values are NA (can occur with sparse data), drop them
+    # from both bulk and reference before fitting.
+    valid <- !is.na(bulk) & rowSums(is.na(ref_normalised)) == 0
+    if (sum(valid) == 0) {
+      warning("aced_glm: sample ", rownames(query)[i],
+              " has no valid (non-NA) genes — returning zero proportions.")
+      proportions[i, ] <- rep(0, num_clusters)
+      next
+    }
+
+    # L2-normalise the bulk sample for numerical comparability with ref columns
+    bulk_valid  <- bulk[valid]
+    bulk_norm   <- bulk_valid / max(sqrt(sum(bulk_valid^2)), 1e-10)
 
     # NNLS: min ||ref_normalised %*% beta - bulk_norm||^2, beta >= 0
-    result <- nnls::nnls(A = ref_normalised, b = bulk_norm)
+    result <- nnls::nnls(A = ref_normalised[valid, , drop = FALSE], b = bulk_norm)
     beta   <- result$x  # K x 1, non-negative
 
     proportions[i, ] <- safe_normalize(beta)

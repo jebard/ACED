@@ -94,18 +94,21 @@ ACED <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
 evaluate_deconvolution <- function(ref_obj, query_obj, strategy,res){
   ### first, launch the deconvolution analysis and get the results
   estimated_proportions <- NULL
-  if(strategy=="bayesprism"){
-    estimated_proportions <- run_bayesprism()
-  } else if (strategy=="music") {
+  if (strategy == "gedit") {
+    estimated_proportions <- run_gedit(ref_obj, query_obj, res)
+  } else if (strategy == "music") {
     estimated_proportions <- run_music(ref_obj)
-  } else if (strategy=="gedit"){
-    estimated_proportions <- run_gedit(ref_obj,query_obj,res)
-  } else if (strategy=="lasso") {
+  } else if (strategy == "lasso") {
     estimated_proportions <- aced_lasso(ref_obj)
-  } else if (strategy=="glm"){
+  } else if (strategy == "glm") {
     estimated_proportions <- aced_glm(ref_obj)
+  } else if (strategy == "bayesprism") {
+    estimated_proportions <- run_bayesprism()
   } else {
-    estimated_proportions <- aced_lasso(ref_obj)
+    stop("Unknown strategy: '", strategy, "'. ",
+         "Valid options: \"gedit\", \"music\", \"lasso\", \"glm\". ",
+         "Note: aced_lasso_spillover() is a standalone diagnostic — ",
+         "call it directly after running ACED(), not as a strategy= argument.")
   }
   message("Processing predictions")
 
@@ -126,6 +129,19 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy,res){
   if(length(rownames(estimated_proportions)) == 1 && strategy == "lasso"){
     print("Adjusting rownames because it is a single-sample in lasso")
     rownames(estimated_proportions) <- rownames(actual_proportion)
+  }
+
+  ## For glm (NNLS) and any other single-sample strategy, apply the same fix
+  if(length(rownames(estimated_proportions)) == 1 && strategy == "glm"){
+    print("Adjusting rownames because it is a single-sample in glm")
+    rownames(estimated_proportions) <- rownames(actual_proportion)
+  }
+
+  ## Column name normalisation: Seurat v5 prepends 'g' to numeric cluster names
+  ## (e.g. cluster "0" becomes "g0"). Strip the prefix so columns match the
+  ## actual_proportion table which uses the raw cluster labels from seurat_clusters.
+  if(all(grepl("^g[0-9]", colnames(estimated_proportions)))) {
+    colnames(estimated_proportions) <- sub("^g", "", colnames(estimated_proportions))
   }
 
   ### enforce the same column order
@@ -459,7 +475,3 @@ ACED_BRENT <- function(ref_obj=ref_obj,strategy="gedit",start=0.01,stop=1,
   PlotACED(df)
   return(df)
 }
-
-
-
-
