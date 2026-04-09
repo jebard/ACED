@@ -12,15 +12,42 @@ run_music <- function(ref_object){
   message("Preparing the reference object for MUSIC")
   SC.eset <- music_prep_reference(music.input = ref_object)
   message("Preparing the query object for MUSIC")
-  bulk.eset <- music_prep_query(ref_obj = ref_object)
-  bulk.eset.mat <- Biobase::exprs(bulk.eset)
-  # Estimate cell type proportions
+  bulk.eset     <- music_prep_query(ref_obj = ref_object)
+  bulk.eset.mat <- Biobase::exprs(bulk.eset)  # G x M matrix
+
+  # Single-sample workaround: MuSiC uses colMeans() and colSums() internally,
+  # which require at least 2 columns. When bulk.mtx has only 1 column, R may
+  # drop the matrix class after division, producing a vector that fails colMeans.
+  # Fix: duplicate the single sample so MuSiC operates on a G x 2 matrix.
+  # Both columns are identical, so the returned proportions are identical --
+  # we take the first row and return it as a single-sample result.
+  single_sample <- ncol(bulk.eset.mat) == 1
+  if (single_sample) {
+    message("run_music: single-sample bulk matrix detected -- duplicating sample ",
+            "to satisfy MuSiC multi-sample requirement. ",
+            "Note: MuSiC's variance-weighting scheme is not meaningful for single samples; ",
+            "consider strategy='lasso' or strategy='glm' for single-sample objects.")
+    original_colname  <- colnames(bulk.eset.mat)
+    bulk.eset.mat     <- cbind(bulk.eset.mat, bulk.eset.mat)
+    colnames(bulk.eset.mat) <- c(original_colname,
+                                 paste0(original_colname, "_dup"))
+  }
+
   print("Running MUSIC ...")
-  estimated.prop = music_prop(bulk.mtx = bulk.eset.mat,
-                              sc.sce = SC.eset,
-                              clusters = 'seurat_clusters',
-                              samples = 'orig.ident', verbose = T)
-  return(as.data.frame(estimated.prop$Est.prop.weighted))
+  estimated.prop <- music_prop(bulk.mtx = bulk.eset.mat,
+                               sc.sce   = SC.eset,
+                               clusters = 'seurat_clusters',
+                               samples  = 'orig.ident', verbose = T)
+
+  result <- as.data.frame(estimated.prop$Est.prop.weighted)
+
+  # If we duplicated the sample, drop the duplicate row before returning
+  if (single_sample) {
+    result <- result[1, , drop = FALSE]
+    rownames(result) <- colnames(Biobase::exprs(bulk.eset))  # restore original name
+  }
+
+  return(result)
 }
 
 
