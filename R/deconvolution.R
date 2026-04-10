@@ -100,11 +100,15 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy,res){
     estimated_proportions <- run_music(ref_obj)
   } else if (strategy == "lasso") {
     estimated_proportions <- aced_lasso(ref_obj)
+  } else if (strategy == "glm") {
+    estimated_proportions <- aced_glm(ref_obj)
   } else if (strategy == "instaprism") {
     estimated_proportions <- run_instaprism(ref_obj)
+  } else if (strategy == "bayesprism") {
+    estimated_proportions <- run_bayesprism()
   } else {
     stop("Unknown strategy: '", strategy, "'. ",
-         "Valid options: \"gedit\", \"music\", \"lasso\", \"instaprism\". ",
+         "Valid options: \"gedit\", \"music\", \"lasso\", \"glm\", \"instaprism\". ",
          "Note: aced_lasso_spillover() is a standalone diagnostic — ",
          "call it directly after running ACED(), not as a strategy= argument.")
   }
@@ -135,6 +139,11 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy,res){
     rownames(estimated_proportions) <- rownames(actual_proportion)
   }
 
+  if(length(rownames(estimated_proportions)) == 1 && strategy == "instaprism"){
+    print("Adjusting rownames because it is a single-sample in instaprism")
+    rownames(estimated_proportions) <- rownames(actual_proportion)
+  }
+
   ## Column name normalisation: Seurat v5 prepends 'g' to numeric cluster names
   ## (e.g. cluster "0" becomes "g0"). Strip the prefix so columns match the
   ## actual_proportion table which uses the raw cluster labels from seurat_clusters.
@@ -142,19 +151,24 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy,res){
     colnames(estimated_proportions) <- sub("^g", "", colnames(estimated_proportions))
   }
 
-  ### enforce the same column order
-  estimated_proportions <- estimated_proportions[rownames(actual_proportion),]
+  ### Enforce row order (samples) and column order (clusters) for ALL strategies.
+  ### Methods like MuSiC and InstaPrism return clusters in arbitrary order.
+  ### Without explicit reordering, element-wise ACE subtraction is silently wrong.
+  ### Also backfill any cluster absent from estimated proportions with zero --
+  ### this can occur when a cluster is very small at a given resolution.
+  estimated_proportions <- estimated_proportions[rownames(actual_proportion), , drop = FALSE]
 
-  if(strategy == "music"){
-    ### for some bizarre reason, MUSIC will return clusters out of order
-    ### If a given cluster isn't in the subset, set estimated proportion to zeros
-    #print(levels(ref_obj$seurat_clusters)[!(levels(ref_obj$seurat_clusters) %in% colnames(estimated_proportions))])
-    for (clust in levels(ref_obj$seurat_clusters)[!(levels(ref_obj$seurat_clusters) %in% colnames(estimated_proportions))]) {
-      print(paste0("Adding missing cluster: ",clust))
-      estimated_proportions[,as.character(clust)] <- 0.0
+  missing_clusts <- colnames(actual_proportion)[
+    !(colnames(actual_proportion) %in% colnames(estimated_proportions))
+  ]
+  if (length(missing_clusts) > 0) {
+    for (clust in missing_clusts) {
+      message("evaluate_deconvolution: cluster '", clust,
+              "' absent from estimated proportions -- filling with 0.")
+      estimated_proportions[, as.character(clust)] <- 0.0
     }
-    estimated_proportions <- estimated_proportions[,colnames(actual_proportion)]
   }
+  estimated_proportions <- estimated_proportions[, colnames(actual_proportion), drop = FALSE]
 
   print("Estimated:")
   print(estimated_proportions)
