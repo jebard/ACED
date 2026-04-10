@@ -100,13 +100,11 @@ evaluate_deconvolution <- function(ref_obj, query_obj, strategy,res){
     estimated_proportions <- run_music(ref_obj)
   } else if (strategy == "lasso") {
     estimated_proportions <- aced_lasso(ref_obj)
-  } else if (strategy == "glm") {
-    estimated_proportions <- aced_glm(ref_obj)
-  } else if (strategy == "bayesprism") {
-    estimated_proportions <- run_bayesprism()
+  } else if (strategy == "instaprism") {
+    estimated_proportions <- run_instaprism(ref_obj)
   } else {
     stop("Unknown strategy: '", strategy, "'. ",
-         "Valid options: \"gedit\", \"music\", \"lasso\", \"glm\". ",
+         "Valid options: \"gedit\", \"music\", \"lasso\", \"instaprism\". ",
          "Note: aced_lasso_spillover() is a standalone diagnostic — ",
          "call it directly after running ACED(), not as a strategy= argument.")
   }

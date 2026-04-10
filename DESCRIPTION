@@ -32,4 +32,5 @@ Imports:
     MCMCpack,
     stats
 Suggests:
-    roxygen2
+    roxygen2,
+    InstaPrism
